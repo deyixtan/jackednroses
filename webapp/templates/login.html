@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}
+    <title>Login</title>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-4">
+        </div>
+
+        <div class="col-sm-4">
+            <form method="POST">
+                <div class="form-group">
+                    {{form.username.label(class="form-group")}}
+                    {{form.username(class="form-control")}}
+                </div>
+                <div class="form-group">
+                    {{form.password.label(class="form-group")}}
+                    {{form.password(class="form-control")}}
+                </div>
+                <div class="form-group">
+                    {{form.hidden_tag()}}
+                    {{form.submit(class="btn btn-primary")}}
+                </div>
+            </form>
+        </div>
+        
+        <div class="col-sm-4">    
+        </div>
+    </div>
+{% endblock %}

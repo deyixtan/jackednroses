@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}
+    <title>Profile</title>
+{% endblock %}
+
+{% block content %}
+    <h1>User Profile</h1>
+    <a class="btn btn-info" href="{{ url_for('edurec.index') }}">Education Records</a>
+    <a class="btn btn-info" href="{{ url_for('uhms.index') }}">Housing Services</a>
+{% endblock %}
