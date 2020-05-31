@@ -11,14 +11,14 @@ class User(db.Model, UserMixin):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
-    username = db.Column(db.String(64), unique=True, index=True)
+    nusnetid = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))
     email = db.Column(db.String(64), unique=True, index=True)
     profile_img = db.Column(db.String(20), nullable=False, default="default_profile.png")
     
-    def __init__(self, name, username, password, email):
+    def __init__(self, name, nusnetid, password, email):
         self.name = name
-        self.username = username
+        self.nusnetid = nusnetid
         self.password_hash = generate_password_hash(password)
         self.email = email
 
@@ -30,7 +30,7 @@ class Module(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(64), unique=True, index=True)
     name = db.Column(db.String(64))
-    academic_year = db.Column(db.Integer())
+    academic_year = db.Column(db.String(9))
     semester = db.Column(db.Integer())
     
     def __init__(self, code, name, academic_year, semester):

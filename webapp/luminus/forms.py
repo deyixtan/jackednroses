@@ -7,7 +7,7 @@ from wtforms.validators import DataRequired
 class CreateModuleForm(FlaskForm):
     code = StringField("Code", validators=[DataRequired()])
     name = StringField("Name", validators=[DataRequired()])
-    academic_year = IntegerField("Academic Year", validators=[DataRequired()])
+    academic_year = StringField("Academic Year (eg. 2019/2020)", validators=[DataRequired()])
     semester = IntegerField("Semester", validators=[DataRequired()])
     submit = SubmitField("Register")
 

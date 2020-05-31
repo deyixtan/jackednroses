@@ -11,7 +11,7 @@ users = Blueprint("users", __name__)
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        user = User.query.filter_by(nusnetid=form.nusnetid.data).first()
         if user is not None:
             if user.check_password(form.password.data):
                 login_user(user)
@@ -21,7 +21,7 @@ def login():
                     next = url_for("core.index")
                 return redirect(next)
 
-        flash("Invalid username or password.", "danger")
+        flash("Invalid NUSNET ID or password.", "danger")
     return render_template("login.html", form=form)
 
 @users.route("/logout")
@@ -34,7 +34,7 @@ def logout():
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(name=form.name.data, username=form.username.data, password=form.password.data, email=form.email.data)
+        user = User(name=form.name.data, nusnetid=form.nusnetid.data, password=form.password.data, email=form.email.data)
         db.session.add(user)
         db.session.commit()
         flash("Successfully registered account.", "success")

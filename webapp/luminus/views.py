@@ -20,7 +20,6 @@ def view_module(code):
     return render_template("luminus/view_module.html", code=module.code, name=module.name, academic_year=module.academic_year, semester=module.semester)
 
 @luminus.route("/register", methods=["GET", "POST"])
-@login_required
 def register():
     form = CreateModuleForm()
     if form.validate_on_submit():
