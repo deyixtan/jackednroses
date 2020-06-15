@@ -17,11 +17,8 @@ class User(db.Model, UserMixin):
     profile_img = db.Column(db.String(20), nullable=False, default="default_profile.png")
     enrolled = db.relationship('Enrolled', backref = 'user', uselist = False)
 
-    def __init__(self, name, nusnetid, password, email):
-        self.name = name
-        self.nusnetid = nusnetid
+    def set_password(self, password):
         self.password_hash = generate_password_hash(password)
-        self.email = email
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -37,19 +34,13 @@ class Module(db.Model):
     academic_year = db.Column(db.String(9))
     semester = db.Column(db.Integer())
     enrolled = db.relationship('Enrolled', backref = 'module', uselist = False)
-    
-    def __init__(self, code, name, academic_year, semester):
-        self.code = code
-        self.name = name
-        self.academic_year = academic_year
-        self.semester = semester
 
     def __repr__(self):
         return f"<Module {self.id}>"      
         
 class Enrolled(db.Model):
     __tablename__ = "enrolled"
-    id = db.Column(db.Integer, primary_key=True)
+    #id = db.Column(db.Integer, primary_key=True)
     nusnetid = db.Column(db.Integer, db.ForeignKey('users.nusnetid'), primary_key=True)
     module_id = db.Column(db.Integer, db.ForeignKey('modules.id'), primary_key=True)
 
@@ -59,5 +50,4 @@ class Enrolled(db.Model):
         self.module_id = module.id
 
     def __repr__(self):
-        return f"<Module {self.id}>"
-        
+        return f"<Module {self.nusnetid}, {self.module_id}>"

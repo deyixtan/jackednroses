@@ -34,7 +34,8 @@ def logout():
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(name=form.name.data, nusnetid=form.nusnetid.data, password=form.password.data, email=form.email.data)
+        user = User(name=form.name.data, nusnetid=form.nusnetid.data, email=form.email.data)
+        user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
         flash("Successfully registered account.", "success")
