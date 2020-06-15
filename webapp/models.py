@@ -44,10 +44,13 @@ class Module(db.Model):
 class Enrolled(db.Model):
     __tablename__ = "enrolled"
     #id = db.Column(db.Integer, primary_key=True)
-    nusnetid = db.Column(db.Integer, db.ForeignKey('users.nusnetid'), primary_key=True)
+    nusnetid = db.Column(db.String(64), db.ForeignKey('users.nusnetid'), primary_key=True)
     module_id = db.Column(db.Integer, db.ForeignKey('modules.id'), primary_key=True)
 
     def __init__(self, nusnetid, code, academic_year, semester):
         self.nusnetid = nusnetid
         module = Module.query.filter_by(code = code, academic_year = academic_year, semester = semester).first()
         self.module_id = module.id
+    
+    def __repr__(self):
+        return f"<Module {self.module_id}>"

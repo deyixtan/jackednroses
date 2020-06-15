@@ -1,5 +1,6 @@
 # webapp/error_pages/handlers.py
 from flask import render_template, Blueprint
+from webapp import db 
 
 error_pages = Blueprint("error_pages", __name__)
 
@@ -13,4 +14,5 @@ def error_404(error):
 
 @error_pages.app_errorhandler(500)
 def error_500(error):
+    db.session.rollback()
     return (render_template("error_pages/500.html"), 500)
