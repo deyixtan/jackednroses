@@ -26,6 +26,9 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    def __repr__(self):
+        return f"<User {self.id}>"
+
 class Module(db.Model):
     __tablename__ = "modules"
     id = db.Column(db.Integer, primary_key=True)
@@ -40,10 +43,13 @@ class Module(db.Model):
         self.name = name
         self.academic_year = academic_year
         self.semester = semester
+
+    def __repr__(self):
+        return f"<Module {self.id}>"      
         
 class Enrolled(db.Model):
     __tablename__ = "enrolled"
-    #id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     nusnetid = db.Column(db.Integer, db.ForeignKey('users.nusnetid'), primary_key=True)
     module_id = db.Column(db.Integer, db.ForeignKey('modules.id'), primary_key=True)
 
@@ -51,3 +57,7 @@ class Enrolled(db.Model):
         self.nusnetid = nusnetid
         module = Module.query.filter_by(code = code, academic_year = academic_year, semester = semester).first()
         self.module_id = module.id
+
+    def __repr__(self):
+        return f"<Module {self.id}>"
+        
