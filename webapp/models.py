@@ -41,7 +41,7 @@ class Module(db.Model):
 class Enrolled(db.Model):
     __tablename__ = "enrolled"
     #id = db.Column(db.Integer, primary_key=True)
-    nusnetid = db.Column(db.String, db.ForeignKey('users.nusnetid'), primary_key=True)
+    nusnetid = db.Column(db.String(64), db.ForeignKey('users.nusnetid'), primary_key=True)
     module_id = db.Column(db.Integer, db.ForeignKey('modules.id'), primary_key=True)
 
     def __init__(self, nusnetid, code, academic_year, semester):
