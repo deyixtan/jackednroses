@@ -1,12 +1,11 @@
 # webapp/luminus/views.py
-from flask import flash, redirect, render_template, url_for, Blueprint
+from flask import flash, redirect, render_template, url_for
 from flask_login import login_required
 from webapp import db
+from webapp.luminus import luminus
 from webapp.luminus.forms import CreateModuleForm, EnrollToModuleForm
 from webapp.models import Module, Enrolled
 from wtforms import ValidationError
-
-luminus = Blueprint("luminus", __name__)
 
 @luminus.route("/")
 @login_required

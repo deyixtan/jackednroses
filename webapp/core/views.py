@@ -1,8 +1,7 @@
 # webapp/core/views.py
-from flask import render_template, request, Blueprint
+from flask import render_template, request
 from flask_login import login_required
-
-core = Blueprint("core", __name__)
+from webapp.core import core
 
 @core.route("/")
 @login_required
