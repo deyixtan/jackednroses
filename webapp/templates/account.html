@@ -5,7 +5,13 @@
 {% endblock %}
 
 {% block content %}
-    <h1>User Profile</h1>
-    <a class="btn btn-info" href="{{ url_for('edurec.index') }}">Education Records</a>
-    <a class="btn btn-info" href="{{ url_for('uhms.index') }}">Housing Services</a>
+    <div class="jumbotron">
+        <h1 class="display-4">{{ user.name }}</h1>
+        <p class="lead">{{ user.email }}</p>
+        <hr class="my-4">
+        <p class="lead">
+            <a class="btn btn-info" href="{{ url_for('edurec.index') }}">Education Records</a>
+            <a class="btn btn-info" href="{{ url_for('uhms.index') }}">Housing Services</a>
+        </p>
+    </div>
 {% endblock %}
