@@ -5,6 +5,7 @@ from webapp import db
 from webapp.luminus.forms import CreateModuleForm, EnrollToModuleForm
 from webapp.models import Module, Enrolled, User
 from wtforms import ValidationError
+import os
 
 luminus = Blueprint("luminus", __name__)
 
@@ -33,9 +34,14 @@ def register():
         module = Module(code=form.code.data, name=form.name.data, academic_year=form.academic_year.data, semester=form.semester.data)
         db.session.add(module)
         db.session.commit()
+        #create module directory if successfull
+        basedir =  os.path.abspath(os.path.dirname(__name__)) #May be able to reference from config file
+        module_path = os.path.join(basedir,'webapp', 'luminus', 'modules', form.code.data, form.academic_year.data.replace('/', ''), str(form.semester.data))
+        if not os.path.exists(module_path):
+            os.makedirs(module_path)
+        
         flash("Successfully registered module.", "success")
         return redirect(url_for("core.index"))
-        #return redirect(url_for("luminus.index"))
     return render_template("luminus/register.html", form=form)
 
 @luminus.route("/enroll_to_module", methods=["GET", "POST"])
