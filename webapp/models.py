@@ -29,7 +29,7 @@ class User(db.Model, UserMixin):
 class Module(db.Model):
     __tablename__ = "modules"
     id = db.Column(db.Integer, primary_key=True)
-    code = db.Column(db.String(64), unique=True, index=True)
+    code = db.Column(db.String(64), index=True)
     name = db.Column(db.String(64))
     academic_year = db.Column(db.String(9))
     semester = db.Column(db.Integer())

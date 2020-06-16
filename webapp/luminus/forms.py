@@ -11,9 +11,15 @@ class CreateModuleForm(FlaskForm):
     semester = IntegerField("Semester", validators=[DataRequired()])
     submit = SubmitField("Register")
 
-    def validate_code(self, field):
-        if Module.query.filter_by(code=field.data).first():
-            raise ValidationError("The course code has been registered already!")
+    def validate(self):
+        rv = FlaskForm.validate(self)
+        if not rv:
+            return False
+        if Module.query.filter_by(code=self.code.data, academic_year = self.academic_year.data, semester = self.semester.data).first():
+            self.code.errors.append("Module, academic year and/or semester has already been registered!")
+        if len(self.errors) == 0:
+            return True
+        return False
 
 class EnrollToModuleForm(FlaskForm):
     code = StringField("Code", validators=[DataRequired()])
