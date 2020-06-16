@@ -1,9 +1,8 @@
 # webapp/error_pages/handlers.py
 # naming reference from https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
-from flask import render_template, Blueprint
+from flask import render_template
 from webapp import db
-
-error_pages = Blueprint("error_pages", __name__)
+from webapp.error_pages import error_pages
 
 @error_pages.app_errorhandler(403)
 def forbidden(error):

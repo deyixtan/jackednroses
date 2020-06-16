@@ -1,11 +1,10 @@
 # webapp/users/views.py
-from flask import flash, redirect, render_template, request, url_for, Blueprint
+from flask import flash, redirect, render_template, request, url_for
 from flask_login import login_user, current_user, logout_user, login_required
 from webapp import db
 from webapp.models import User
+from webapp.users import users
 from webapp.users.forms import LoginForm, RegistrationForm
-
-users = Blueprint("users", __name__)
 
 @users.route("/login", methods=["GET", "POST"])
 def login():
