@@ -131,3 +131,6 @@ dmypy.json
 
 # Database migration
 migrations/
+
+# MacOS directory attribute
+.DS_Store
