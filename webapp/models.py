@@ -29,7 +29,7 @@ class User(db.Model, UserMixin):
 class Module(db.Model):
     __tablename__ = "modules"
     id = db.Column(db.Integer, primary_key=True)
-    code = db.Column(db.String(64), unique=True, index=True)
+    code = db.Column(db.String(64), index=True)
     name = db.Column(db.String(64))
     academic_year = db.Column(db.String(9))
     semester = db.Column(db.Integer())
@@ -41,7 +41,7 @@ class Module(db.Model):
 class Enrolled(db.Model):
     __tablename__ = "enrolled"
     #id = db.Column(db.Integer, primary_key=True)
-    nusnetid = db.Column(db.String, db.ForeignKey('users.nusnetid'), primary_key=True)
+    nusnetid = db.Column(db.String(64), db.ForeignKey('users.nusnetid'), primary_key=True)
     module_id = db.Column(db.Integer, db.ForeignKey('modules.id'), primary_key=True)
 
     def __init__(self, nusnetid, code, academic_year, semester):
