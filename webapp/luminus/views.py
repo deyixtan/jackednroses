@@ -8,16 +8,20 @@ from webapp.models import Module, Enrolled, User
 from wtforms import ValidationError
 import os
 
-@luminus.route("/")
+@luminus.route("/", defaults={"module_index": 0})
+@luminus.route("/<int:module_index>")
 @login_required
-def index():
+def index(module_index):
     #Gets the NUSNET ID of the current user
     user = User.query.filter_by(id=current_user.get_id()).first()
     enrolled = Enrolled.query.filter_by(user = user).all()
     module_list = []
     for mod in enrolled:
         module_list.append(Module.query.filter_by(id = mod.module_id).first())
-    return render_template("luminus/index.html", module_list=module_list)
+
+    iframe = url_for('luminus.view_module', code=module_list[module_index].code)
+
+    return render_template("luminus/index.html", module_list=module_list, iframe=iframe)
 
 @luminus.route("/view_module/<code>")
 @login_required
