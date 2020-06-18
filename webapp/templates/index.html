@@ -6,10 +6,25 @@
         <div class="col-sm-4">
             <div class="col-sm-12">
                 <h3>Annoucements</h3>
-                <ul class="list-group">
-                    <li class="list-group-item">lorem 1</li>
-                    <li class="list-group-item">ipsum 1</li>
-                </ul>
+                <div class="accordion">
+                    {% for announcement in announcement_list %}
+                    <div class="card">
+                        <div class="card-header" id="heading{{ loop.index }}">
+                          <h2 class="mb-0">
+                            <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ loop.index }}">
+                              {{announcement.module.code}}:  {{announcement.title}}
+                            </button>
+                          </h2>
+                        </div>
+                    
+                        <div id="collapse{{ loop.index }}" class="collapse show" aria-labelledby="heading{{ loop.index }}">
+                          <div class="card-body">
+                            {{announcement.body}}
+                          </div>
+                        </div>
+                      </div>
+                    {% endfor %}
+                </div>
             </div>
             <div class="col-sm-12">
                 <h3>Upcoming Tasks/Exams</h3>
