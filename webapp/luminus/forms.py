@@ -21,12 +21,12 @@ class CreateModuleForm(FlaskForm):
             return True
         return False
 
-class EnrollToModuleForm(FlaskForm):
+class EnrolToModuleForm(FlaskForm):
     code = StringField("Code", validators=[DataRequired()])
     academic_year = StringField("Academic Year (eg. 2019/2020)", validators=[DataRequired()]) 
     semester = IntegerField("Semester", validators=[DataRequired()])
     nusnetid = StringField("NUSNET ID", validators=[DataRequired()])
-    submit = SubmitField("Enroll to Module")
+    submit = SubmitField("Enrol to Module")
 
     def validate(self):
         rv = FlaskForm.validate(self)

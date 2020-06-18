@@ -3,7 +3,7 @@ from flask import flash, redirect, render_template, url_for
 from flask_login import login_required, current_user
 from webapp import db
 from webapp.luminus import luminus
-from webapp.luminus.forms import CreateModuleForm, EnrollToModuleForm
+from webapp.luminus.forms import CreateModuleForm, EnrolToModuleForm
 from webapp.models import Module, Enrolled, User
 from wtforms import ValidationError
 import os
@@ -47,15 +47,15 @@ def register():
         return redirect(url_for("core.index"))
     return render_template("luminus/register.html", form=form)
 
-@luminus.route("/enroll_to_module", methods=["GET", "POST"])
+@luminus.route("/enrol_to_module", methods=["GET", "POST"])
 @login_required
-def enroll_to_module():
-    form = EnrollToModuleForm()
+def enrol_to_module():
+    form = EnrolToModuleForm()
     if form.validate_on_submit():
         enrolled = Enrolled(nusnetid = form.nusnetid.data, code = form.code.data, academic_year = form.academic_year.data, semester = form.semester.data)
         db.session.add(enrolled)
         db.session.commit()
         flash("Successfully enrolled student to module.", "success")
-        #return redirect(url_for(luminus.enroll_to_module))
+        #return redirect(url_for(luminus.enrol_to_module))
         return redirect(url_for("core.index"))
-    return render_template("luminus/enroll_to_module.html", form=form)
+    return render_template("luminus/enrol_to_module.html", form=form)
