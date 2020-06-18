@@ -1,5 +1,6 @@
 # webapp/__init__.py
 from flask import Flask
+from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -9,6 +10,7 @@ db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
 login_manager.login_view = "users.login"
+bootstrap = Bootstrap()
 
 def create_app(config_class=Config):
     # initialize app instance
@@ -19,6 +21,7 @@ def create_app(config_class=Config):
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
+    bootstrap.init_app(app)
 
     # blueprint registrations
     from webapp.core.views import core
