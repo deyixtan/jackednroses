@@ -16,12 +16,16 @@ def index(module_index):
     user = User.query.filter_by(id=current_user.get_id()).first()
     enrolled = Enrolled.query.filter_by(user = user).all()
     module_list = []
-    for mod in enrolled:
-        module_list.append(Module.query.filter_by(id = mod.module_id).first())
+    #Check if user has enrolled modules
+    if enrolled:
+        for mod in enrolled:
+            module_list.append(Module.query.filter_by(id = mod.module_id).first())
 
-    iframe = url_for('luminus.view_module', code=module_list[module_index].code)
+        iframe = url_for('luminus.view_module', code=module_list[module_index].code)
 
-    return render_template("luminus/index.html", module_list=module_list, iframe=iframe)
+        return render_template("luminus/index.html", module_list=module_list, iframe=iframe)
+    else:
+         return render_template("luminus/index.html")
 
 @luminus.route("/view_module/<code>")
 @login_required

@@ -15,8 +15,8 @@ def index():
     for enrol_entry in enrolled:
         mod = Module.query.get(enrol_entry.module_id)
         announcement_list.extend(mod.announcements)
-    print(announcement_list)
-    
+    #print(announcement_list)
+    announcement_list = sorted(announcement_list, key=lambda x: x.date, reverse=True)
     return render_template("index.html", announcement_list = announcement_list)
 
 @core.route("/account")

@@ -2,6 +2,7 @@
 from flask_login import UserMixin
 from webapp import db, login_manager
 from werkzeug.security import check_password_hash, generate_password_hash
+from datetime import datetime
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -55,6 +56,7 @@ class Announcement(db.Model):
     __tablename__ = "announcements"
     id = db.Column(db.Integer, primary_key = True)
     module_id = db.Column(db.Integer, db.ForeignKey('modules.id'))
+    date = db.Column(db.DateTime, default=datetime.utcnow)
     title = db.Column(db.String(32))
     body = db.Column(db.String(1024))
 
@@ -63,4 +65,4 @@ class Announcement(db.Model):
 
 
     def __repr__(self):
-        return f"<Announcement {self.id}, {self.module_id}, {self.title}"
+        return f"<Announcement {self.id}, {self.module_id}, {self.title}, {self.date}"
