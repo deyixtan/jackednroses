@@ -3,8 +3,8 @@ from flask import flash, redirect, render_template, url_for
 from flask_login import login_required, current_user
 from webapp import db
 from webapp.luminus import luminus
-from webapp.luminus.forms import CreateModuleForm, EnrolToModuleForm, CreateAnnouncementForm
-from webapp.models import Module, Enrolled, User, Announcement
+from webapp.luminus.forms import CreateModuleForm, EnrolToModuleForm, CreateAnnouncementForm, CreateTaskForm
+from webapp.models import Module, Enrolled, User, Announcement, Task
 from wtforms import ValidationError
 import os
 
@@ -71,8 +71,23 @@ def create_announcement():
     if form.validate_on_submit():
         announcement = Announcement(title = form.title.data, body = form.body.data)
         announcement.set_module(form.code.data, form.academic_year.data, form.semester.data)
+        announcement.set_timestamp()
         db.session.add(announcement)
         db.session.commit()
         flash("Successfully published announcement.", "success")
         return redirect(url_for("core.index"))
     return render_template("luminus/create_announcement.html", form=form)
+
+@luminus.route("/create_task", methods=["GET", "POST"])
+@login_required
+def create_task():
+    form = CreateTaskForm()
+    if form.validate_on_submit():
+        task = Task(taskname = form.taskname.data, taskinfo = form.taskinfo.data)
+        task.set_module(form.code.data, form.academic_year.data, form.semester.data)
+        task.set_duedate(form.day.data, form.month.data, form.year.data, form.hour.data, form.minute.data)
+        db.session.add(task)
+        db.session.commit()
+        flash("Successfully published task.", "success")
+        return redirect(url_for("core.index"))
+    return render_template("luminus/create_task.html", form=form)
