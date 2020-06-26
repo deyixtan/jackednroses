@@ -12,7 +12,3 @@ def make_shell_context():
         "Module": Module,
         "Enrolled": Enrolled
     }
-
-# Python script entry point
-if __name__ == "__main__":
-    app.run(debug=True)
