@@ -9,7 +9,7 @@
                 <div class="accordion">
                     {% for announcement in announcement_list %}
                     <div class="card">
-                        <div class="card-header" id="heading{{ loop.index }}">
+                        <div class="card-header" id="heading_announcement{{ loop.index }}">
                           <h2 class="mb-0">
                             <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ loop.index }}">
                               {{announcement.module.code}}:  {{announcement.title}} <br>                                                      
@@ -18,7 +18,7 @@
                           </h2>
                         </div>
                     
-                        <div id="collapse{{ loop.index }}" class="collapse show" aria-labelledby="heading{{ loop.index }}">
+                        <div id="collapse{{ loop.index }}" class="collapse show" aria-labelledby="heading_announcement{{ loop.index }}">
                           <div class="card-body">
                             {{announcement.body}}
                           </div>
@@ -29,11 +29,42 @@
             </div>
             <div class="col-sm-12">
                 <h3>Upcoming Tasks/Exams</h3>
-                <ul class="list-group">
-                    <li class="list-group-item">lorem 2</li>
-                    <li class="list-group-item">ipsum 2</li>
-                </ul>
+                <div class="accordion">
+                  {% for task_exam in task_exam_list %}
+                  <div class="card">
+                      <div class="card-header" id="heading_task{{ loop.index }}">
+                        <h2 class="mb-0">
+                          <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse1{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ loop.index }}">
+                            {% if isinstance(task_exam, Task) %}
+                            {{task_exam.module.code}}:  {{task_exam.taskname}}
+                            {% elif isinstance(task_exam, Exam) %}
+                            {{task_exam.module.code}}:  {{task_exam.examname}}
+                            {% endif %}
+                            <br>                                                      
+                          </button>
+                          {% if isinstance(task_exam, Task) %}
+                          <p style = "font-size:16px">&nbsp &nbsp{{task_exam.timestamp.strftime("Due Date: %m/%d/%Y, %H%M")}}</p>
+                          {% elif isinstance(task_exam, Exam) %}
+                          <p style = "font-size:16px">&nbsp &nbsp{{task_exam.timestamp.strftime("Exam Date: %m/%d/%Y, %H%M")}}</p>
+                          {% endif %}
+                        </h2>
+                      </div>
+                  
+                      <div id="collapse1{{ loop.index }}" class="collapse show" aria-labelledby="heading_task{{ loop.index }}">
+                        <div class="card-body">
+                          {% if isinstance(task_exam, Task) %}
+                          {{task_exam.taskinfo}}
+                          {% elif isinstance(task_exam, Exam) %}
+                          {{task_exam.examinfo}}
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+              </div>
             </div>
+
+            
         </div>
 
         <div class="col-sm-8">

@@ -2,7 +2,7 @@
 from flask_login import UserMixin
 from webapp import db, login_manager
 from werkzeug.security import check_password_hash, generate_password_hash
-from datetime import datetime
+import datetime, pytz
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -36,6 +36,8 @@ class Module(db.Model):
     semester = db.Column(db.Integer())
     enrolled = db.relationship('Enrolled', backref = 'module')
     announcements = db.relationship('Announcement', backref = 'module')
+    tasks = db.relationship('Task', backref = 'module')
+    exams = db.relationship('Exam', backref = 'module')
 
     def __repr__(self):
         return f"<Module {self.id}>"      
@@ -56,13 +58,50 @@ class Announcement(db.Model):
     __tablename__ = "announcements"
     id = db.Column(db.Integer, primary_key = True)
     module_id = db.Column(db.Integer, db.ForeignKey('modules.id'))
-    date = db.Column(db.DateTime, default=datetime.utcnow)
+    date = db.Column(db.DateTime)
     title = db.Column(db.String(32))
     body = db.Column(db.String(1024))
 
     def set_module(self, code, academic_year, semester):
         self.module_id = Module.query.filter_by(code = code, academic_year = academic_year, semester = semester).first().id
 
+    def set_timestamp(self):
+        dt = datetime.datetime.now(tz=pytz.UTC)
+        self.date = dt.astimezone(pytz.timezone('Asia/Singapore'))
 
     def __repr__(self):
         return f"<Announcement {self.id}, {self.module_id}, {self.title}, {self.date}"
+    
+class Task(db.Model):
+    __tablename__ = "tasks"
+    id = db.Column(db.Integer, primary_key = True)
+    module_id = db.Column(db.Integer, db.ForeignKey('modules.id'))
+    taskname = db.Column(db.String(32))
+    taskinfo = db.Column(db.String(1024))
+    timestamp = db.Column(db.DateTime)
+
+    def set_module(self, code, academic_year, semester):
+        self.module_id = Module.query.filter_by(code = code, academic_year = academic_year, semester = semester).first().id
+
+    def set_timestamp(self, day, month, year, hour, minute):
+        self.timestamp = datetime.datetime(year, month, day, hour, minute, 59)
+
+    def __repr__(self):
+        return f"<Task {self.id}, {self.module_id}, {self.taskname}, {self.date}"
+
+class Exam(db.Model):
+    __tablename__ = "exams"
+    id = db.Column(db.Integer, primary_key = True)
+    module_id = db.Column(db.Integer, db.ForeignKey('modules.id'))
+    examname = db.Column(db.String(32))
+    examinfo = db.Column(db.String(1024))
+    timestamp = db.Column(db.DateTime)
+
+    def set_module(self, code, academic_year, semester):
+        self.module_id = Module.query.filter_by(code = code, academic_year = academic_year, semester = semester).first().id
+    
+    def set_timestamp(self, day, month, year, hour, minute):
+        self.timestamp = datetime.datetime(year, month, day, hour, minute)
+    
+    def __repr__(self):
+        return f"<Exam {self.id}, {self.module_id}, {self.examname}, {self.examdatetime}"
