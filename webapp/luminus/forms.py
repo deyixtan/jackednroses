@@ -1,6 +1,6 @@
 # webapp/luminus/forms.py
 from flask_wtf import FlaskForm
-from webapp.models import Module, Enrolled, User, Announcement
+from webapp.models import Module, Enrolled, User, Announcement, Exam
 from wtforms import IntegerField, StringField, SubmitField, TextAreaField, ValidationError
 from wtforms.validators import DataRequired
 
@@ -80,6 +80,33 @@ class CreateTaskForm(FlaskForm):
     minute = IntegerField(validators=[DataRequired()])
 
     submit = SubmitField("Publish Task")
+
+    def validate(self):
+        rv = FlaskForm.validate(self)
+        if not rv:
+            return False
+        mod = Module.query.filter_by(code=self.code.data, academic_year = self.academic_year.data, semester = self.semester.data).first()
+        if not mod:
+            self.code.errors.append("Module, Academic Year and/or semester does not exit!")
+        if len(self.errors) == 0:
+            return True
+        return False
+
+class CreateExamForm(FlaskForm):
+    code = StringField("Code", validators=[DataRequired()])
+    academic_year = StringField("Academic Year (eg. 2019/2020)", validators=[DataRequired()]) 
+    semester = IntegerField("Semester", validators=[DataRequired()])
+    examname = StringField("Exam Name", validators=[DataRequired()])
+    examinfo = TextAreaField("Exam Info", validators=[DataRequired()])
+
+    day = IntegerField("Date (DAY/MONTH/YEAR)", validators=[DataRequired()])
+    month = IntegerField(validators=[DataRequired()])
+    year = IntegerField(validators=[DataRequired()])
+
+    hour = IntegerField("Time (HOUR:MINUTES)", validators=[DataRequired()])
+    minute = IntegerField(validators=[DataRequired()])
+
+    submit = SubmitField("Publish Exam Details")
 
     def validate(self):
         rv = FlaskForm.validate(self)

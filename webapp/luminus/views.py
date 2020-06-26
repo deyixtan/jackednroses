@@ -3,8 +3,8 @@ from flask import flash, redirect, render_template, url_for
 from flask_login import login_required, current_user
 from webapp import db
 from webapp.luminus import luminus
-from webapp.luminus.forms import CreateModuleForm, EnrolToModuleForm, CreateAnnouncementForm, CreateTaskForm
-from webapp.models import Module, Enrolled, User, Announcement, Task
+from webapp.luminus.forms import CreateModuleForm, EnrolToModuleForm, CreateAnnouncementForm, CreateTaskForm, CreateExamForm
+from webapp.models import Module, Enrolled, User, Announcement, Task, Exam
 from wtforms import ValidationError
 import os
 
@@ -85,9 +85,24 @@ def create_task():
     if form.validate_on_submit():
         task = Task(taskname = form.taskname.data, taskinfo = form.taskinfo.data)
         task.set_module(form.code.data, form.academic_year.data, form.semester.data)
-        task.set_duedate(form.day.data, form.month.data, form.year.data, form.hour.data, form.minute.data)
+        task.set_timestamp(form.day.data, form.month.data, form.year.data, form.hour.data, form.minute.data)
         db.session.add(task)
         db.session.commit()
         flash("Successfully published task.", "success")
         return redirect(url_for("core.index"))
     return render_template("luminus/create_task.html", form=form)
+
+@luminus.route("/create_exam", methods=["GET", "POST"])
+@login_required
+def create_exam():
+    form = CreateExamForm()
+    if form.validate_on_submit():
+        exam = Exam(examname = form.examname.data, examinfo = form.examinfo.data)
+        exam.set_module(form.code.data, form.academic_year.data, form.semester.data)
+        exam.set_timestamp(form.day.data, form.month.data, form.year.data, form.hour.data, form.minute.data)
+        db.session.add(exam)
+        db.session.commit()
+        flash("Successfully published exam details", "success")
+        return redirect(url_for("core.index"))
+    return render_template("luminus/create_exam.html", form=form)
+

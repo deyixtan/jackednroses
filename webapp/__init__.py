@@ -16,6 +16,10 @@ def create_app(config_class=Config):
     # initialize app instance
     app = Flask(__name__)
     app.config.from_object(config_class)
+    app.jinja_env.globals.update(isinstance=isinstance)
+    from webapp.models import Task, Exam
+    app.jinja_env.globals.update(Task=Task)
+    app.jinja_env.globals.update(Exam=Exam)
 
     # initialize flask extensions
     db.init_app(app)
