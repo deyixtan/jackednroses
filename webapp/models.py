@@ -83,8 +83,8 @@ class Task(db.Model):
     def set_module(self, code, academic_year, semester):
         self.module_id = Module.query.filter_by(code = code, academic_year = academic_year, semester = semester).first().id
 
-    def set_timestamp(self, day, month, year, hour, minute):
-        self.timestamp = datetime.datetime(year, month, day, hour, minute, 59)
+    def set_timestamp(self, timestamp):
+        self.timestamp = timestamp
 
     def __repr__(self):
         return f"<Task {self.id}, {self.module_id}, {self.taskname}, {self.date}"
@@ -99,9 +99,9 @@ class Exam(db.Model):
 
     def set_module(self, code, academic_year, semester):
         self.module_id = Module.query.filter_by(code = code, academic_year = academic_year, semester = semester).first().id
-    
-    def set_timestamp(self, day, month, year, hour, minute):
-        self.timestamp = datetime.datetime(year, month, day, hour, minute)
+
+    def set_timestamp(self, timestamp):
+        self.timestamp = timestamp
     
     def __repr__(self):
         return f"<Exam {self.id}, {self.module_id}, {self.examname}, {self.examdatetime}"

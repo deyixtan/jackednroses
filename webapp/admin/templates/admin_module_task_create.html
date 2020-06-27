@@ -1,0 +1,45 @@
+{% extends "admin_base.html" %}
+{% block title %}Module::Task_Create{% endblock %}
+
+{% block page_content %}
+    <form method="POST">
+        {% for error in form.errors %}
+            <div class="alert alert-danger" role="alert">
+                <a class="close" data-dismiss="alert">×</a>
+                <span>{{form.errors[error][0]}}</span>
+            </div>
+        {% endfor %}
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                {{form.code.label(class="form-group")}}
+                {{form.code(class="form-control")}}
+            </div>                   
+            <div class="form-group col-md-4">
+                {{form.academic_year.label(class="form-group")}}
+                {{form.academic_year(class="form-control")}}
+            </div>
+            <div class="form-group col-md-4">
+                {{form.semester.label(class="form-group")}}
+                {{form.semester(class="form-control")}}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-5">
+                {{form.taskname.label(class="form-group")}}
+                {{form.taskname(class="form-control")}}
+            </div>
+            <div class="form-group col-md-7">
+                {{form.timestamp.label(class="form-group")}}
+                {{form.timestamp(class="form-control")}}
+            </div> 
+        </div>
+        <div class="form-group">
+            {{form.taskinfo.label(class="form-group")}}
+            {{form.taskinfo(class="form-control")}}
+        </div> 
+        <div class="form-group">
+            {{form.hidden_tag()}}
+            {{form.submit(class="btn btn-primary form-control")}}
+        </div>
+    </form>
+{% endblock %}
