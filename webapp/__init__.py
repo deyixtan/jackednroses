@@ -28,6 +28,9 @@ def create_app(config_class=Config):
     bootstrap.init_app(app)
 
     # blueprint registrations
+    from webapp.admin.views import admin
+    app.register_blueprint(admin, url_prefix="/admin")
+
     from webapp.core.views import core
     app.register_blueprint(core)
     
