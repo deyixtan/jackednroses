@@ -52,7 +52,7 @@ class Enrolled(db.Model):
         self.module_id = Module.query.filter_by(code = code, academic_year = academic_year, semester = semester).first().id
 
     def __repr__(self):
-        return f"<Module {self.nusnetid}, {self.module_id}>"
+        return f"<Module {self.module_id}, {self.nusnetid}>"
 
 class Announcement(db.Model):
     __tablename__ = "announcements"
@@ -95,7 +95,9 @@ class Exam(db.Model):
     module_id = db.Column(db.Integer, db.ForeignKey('modules.id'))
     examname = db.Column(db.String(32))
     examinfo = db.Column(db.String(1024))
+    location = db.Column(db.String(32))
     timestamp = db.Column(db.DateTime)
+    examdetails = db.relationship('ExamDetails', backref = 'exam')
 
     def set_module(self, code, academic_year, semester):
         self.module_id = Module.query.filter_by(code = code, academic_year = academic_year, semester = semester).first().id
@@ -105,3 +107,16 @@ class Exam(db.Model):
     
     def __repr__(self):
         return f"<Exam {self.id}, {self.module_id}, {self.examname}, {self.examdatetime}"
+
+class ExamDetails(db.Model):
+    __tablename__ = "examdetails"
+    nusnetid = db.Column(db.String(64), db.ForeignKey('users.nusnetid'), primary_key=True)
+    exam_id = db.Column(db.Integer, db.ForeignKey('exams.id'), primary_key=True)
+    seatnum = db.Column(db.Integer)
+    
+    def set_exam(self, code, academic_year, semester):
+        module_id = Module.query.filter_by(code = code, academic_year = academic_year, semester = semester).first().id
+        self.exam_id = Exam.query.filter_by(module_id = module_id).first().id
+    
+    def __repr__(self):
+        return f"<Exam Details {self.module_id}, {self.nusnetid}, {self.seatnum}>"

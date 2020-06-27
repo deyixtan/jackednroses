@@ -3,8 +3,8 @@ from flask import flash, redirect, render_template, url_for
 from flask_login import login_required, current_user
 from webapp import db
 from webapp.luminus import luminus
-from webapp.luminus.forms import CreateModuleForm, EnrolToModuleForm, CreateAnnouncementForm, CreateTaskForm, CreateExamForm
-from webapp.models import Module, Enrolled, User, Announcement, Task, Exam
+from webapp.luminus.forms import CreateModuleForm, EnrolToModuleForm, CreateAnnouncementForm, CreateTaskForm, CreateExamForm, EnrolToExamForm
+from webapp.models import Module, Enrolled, User, Announcement, Task, Exam, ExamDetails
 from wtforms import ValidationError
 import os
 
@@ -97,7 +97,7 @@ def create_task():
 def create_exam():
     form = CreateExamForm()
     if form.validate_on_submit():
-        exam = Exam(examname = form.examname.data, examinfo = form.examinfo.data)
+        exam = Exam(examname = form.examname.data, examinfo = form.examinfo.data, location = form.location.data)
         exam.set_module(form.code.data, form.academic_year.data, form.semester.data)
         exam.set_timestamp(form.day.data, form.month.data, form.year.data, form.hour.data, form.minute.data)
         db.session.add(exam)
@@ -106,3 +106,15 @@ def create_exam():
         return redirect(url_for("core.index"))
     return render_template("luminus/create_exam.html", form=form)
 
+@luminus.route("/enrol_to_exam", methods=["GET", "POST"])
+@login_required
+def enrol_to_exam():
+    form = EnrolToExamForm()
+    if form.validate_on_submit():
+        examdetails = ExamDetails(nusnetid = form.nusnetid.data, seatnum = form.seatnum.data)
+        examdetails.set_exam(form.code.data, form.academic_year.data, form.semester.data)
+        db.session.add(examdetails)
+        db.session.commit()
+        flash("Successfully enrolled student to exam", "success")
+        return redirect(url_for("core.index"))
+    return render_template("luminus/enrol_to_exam.html", form=form)

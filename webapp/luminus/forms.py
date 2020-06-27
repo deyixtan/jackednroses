@@ -1,6 +1,6 @@
 # webapp/luminus/forms.py
 from flask_wtf import FlaskForm
-from webapp.models import Module, Enrolled, User, Announcement, Exam
+from webapp.models import Module, Enrolled, User, Announcement, Exam, ExamDetails
 from wtforms import IntegerField, StringField, SubmitField, TextAreaField, ValidationError
 from wtforms.validators import DataRequired
 
@@ -98,6 +98,7 @@ class CreateExamForm(FlaskForm):
     semester = IntegerField("Semester", validators=[DataRequired()])
     examname = StringField("Exam Name", validators=[DataRequired()])
     examinfo = TextAreaField("Exam Info", validators=[DataRequired()])
+    location = StringField("Location")
 
     day = IntegerField("Date (DAY/MONTH/YEAR)", validators=[DataRequired()])
     month = IntegerField(validators=[DataRequired()])
@@ -115,6 +116,28 @@ class CreateExamForm(FlaskForm):
         mod = Module.query.filter_by(code=self.code.data, academic_year = self.academic_year.data, semester = self.semester.data).first()
         if not mod:
             self.code.errors.append("Module, Academic Year and/or semester does not exit!")
+        if len(self.errors) == 0:
+            return True
+        return False
+
+class EnrolToExamForm(FlaskForm):
+    code = StringField("Code", validators=[DataRequired()])
+    academic_year = StringField("Academic Year (eg. 2019/2020)", validators=[DataRequired()]) 
+    semester = IntegerField("Semester", validators=[DataRequired()])
+    nusnetid = StringField("NUSNET ID", validators=[DataRequired()])
+    seatnum = IntegerField("Seat Number")
+    submit = SubmitField("Enrol to Module")
+
+    def validate(self):
+        rv = FlaskForm.validate(self)
+        if not rv:
+            return False
+        mod = Module.query.filter_by(code=self.code.data, academic_year = self.academic_year.data, semester = self.semester.data).first()
+        if not mod:
+            self.code.errors.append("Module, Academic Year and/or semester does not exist!")
+        exam = Exam.query.filter_by(id = mod.id)
+        if not exam:
+            self.code.errors.append("Exam does not exist!")
         if len(self.errors) == 0:
             return True
         return False
