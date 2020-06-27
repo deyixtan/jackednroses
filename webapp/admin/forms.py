@@ -1,6 +1,6 @@
 # webapp/admin/forms.py
 from flask_wtf import FlaskForm
-from webapp.models import Announcement, Enrolled, Exam, Module, Task, User
+from webapp.models import Announcement, Enrolled, Exam, ExamDetails, Module, Task, User
 from wtforms import IntegerField, PasswordField, StringField, SubmitField, TextAreaField, ValidationError
 from wtforms.fields.html5 import DateTimeLocalField
 from wtforms.validators import DataRequired, Email, EqualTo
@@ -51,8 +51,8 @@ class ModuleExamCreateForm(FlaskForm):
     semester = IntegerField("Semester", validators=[DataRequired()])
     examname = StringField("Exam Name", validators=[DataRequired()])
     examinfo = TextAreaField("Exam Info", render_kw={"rows": 10}, validators=[DataRequired()])
-    timestamp = DateTimeLocalField("Date", format="%Y-%m-%dT%H:%M")
-
+    location = StringField("Location", validators=[DataRequired()])
+    timestamp = DateTimeLocalField("Date", format="%Y-%m-%dT%H:%M", validators=[DataRequired()])
     submit = SubmitField("Publish Exam Details")
 
     def validate(self):
@@ -67,14 +67,36 @@ class ModuleExamCreateForm(FlaskForm):
         return False
 
 
+class ModuleExamUserCreateForm(FlaskForm):
+    code = StringField("Code", validators=[DataRequired()])
+    academic_year = StringField("Academic Year", render_kw={"placeholder": "eg. 2019/2020"}, validators=[DataRequired()]) 
+    semester = IntegerField("Semester", validators=[DataRequired()])
+    nusnetid = StringField("NUSNET ID", validators=[DataRequired()])
+    seatnum = IntegerField("Seat Number", validators=[DataRequired()])
+    submit = SubmitField("Enrol to Module")
+
+    def validate(self):
+        rv = FlaskForm.validate(self)
+        if not rv:
+            return False
+        mod = Module.query.filter_by(code=self.code.data, academic_year = self.academic_year.data, semester = self.semester.data).first()
+        if not mod:
+            self.code.errors.append("Module, Academic Year and/or semester does not exist!")
+        exam = Exam.query.filter_by(id = mod.id)
+        if not exam:
+            self.code.errors.append("Exam does not exist!")
+        if len(self.errors) == 0:
+            return True
+        return False 
+
+
 class ModuleTaskCreateForm(FlaskForm):
     code = StringField("Code", validators=[DataRequired()])
     academic_year = StringField("Academic Year", render_kw={"placeholder": "eg. 2019/2020"}, validators=[DataRequired()]) 
     semester = IntegerField("Semester", validators=[DataRequired()])
     taskname = StringField("Task Name", validators=[DataRequired()])
     taskinfo = TextAreaField("Task Info", render_kw={"rows": 10}, validators=[DataRequired()])
-    timestamp = DateTimeLocalField("Due Date", format="%Y-%m-%dT%H:%M")
-
+    timestamp = DateTimeLocalField("Due Date", format="%Y-%m-%dT%H:%M", validators=[DataRequired()])
     submit = SubmitField("Publish Task")
 
     def validate(self):

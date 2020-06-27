@@ -3,8 +3,8 @@ import os
 from flask import flash, render_template
 from webapp import db
 from webapp.admin import admin
-from webapp.admin.forms import ModuleAnnoucementCreateForm, ModuleCreateForm, ModuleExamCreateForm, ModuleTaskCreateForm, ModuleUserCreateForm, UserCreateForm
-from webapp.models import Announcement, Enrolled, Exam, Module, Task, User
+from webapp.admin.forms import ModuleAnnoucementCreateForm, ModuleCreateForm, ModuleExamCreateForm, ModuleExamUserCreateForm, ModuleTaskCreateForm, ModuleUserCreateForm, UserCreateForm
+from webapp.models import Announcement, Enrolled, Exam, ExamDetails, Module, Task, User
 
 @admin.route("/")
 def index():
@@ -45,13 +45,25 @@ def module_create():
 def module_exam_create():
     form = ModuleExamCreateForm()
     if form.validate_on_submit():
-        exam = Exam(examname = form.examname.data, examinfo = form.examinfo.data)
+        exam = Exam(examname = form.examname.data, examinfo = form.examinfo.data, location = form.location.data)
         exam.set_module(form.code.data, form.academic_year.data, form.semester.data)
         exam.set_timestamp(form.timestamp.data)
         db.session.add(exam)
         db.session.commit()
         flash("Successfully published exam details", "success")
     return render_template("admin_module_exam_create.html", form=form)
+
+
+@admin.route("/module_exam_user_create", methods=["GET", "POST"])
+def module_exam_user_create():
+    form = ModuleExamUserCreateForm()
+    if form.validate_on_submit():
+        examdetails = ExamDetails(nusnetid = form.nusnetid.data, seatnum = form.seatnum.data)
+        examdetails.set_exam(form.code.data, form.academic_year.data, form.semester.data)
+        db.session.add(examdetails)
+        db.session.commit()
+        flash("Successfully enrolled student to exam", "success")
+    return render_template("admin_module_exam_user_create.html", form=form)  
 
 
 @admin.route("/module_task_create", methods=["GET", "POST"])

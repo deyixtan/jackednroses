@@ -1,5 +1,5 @@
 {% extends "admin_base.html" %}
-{% block title %}Module::Exam_Create{% endblock %}
+{% block title %}Module::Exam_User_Create{% endblock %}
 
 {% block page_content %}
     <form method="POST">
@@ -23,27 +23,19 @@
                 {{form.semester(class="form-control")}}
             </div>
         </div>
-        <div class="form-group">
-            {{form.examname.label(class="form-group")}}
-            {{form.examname(class="form-control")}}
-        </div>
         <div class="form-row">
-            <div class="form-group col-md-5">
-                {{form.location.label(class="form-group")}}
-                {{form.location(class="form-control")}}
+            <div class="form-group col-md-6">
+                {{form.nusnetid.label(class="form-group")}}
+                {{form.nusnetid(class="form-control")}}
             </div>
-            <div class="form-group col-md-7">
-                {{form.timestamp.label(class="form-group")}}
-                {{form.timestamp(class="form-control")}}
-            </div> 
-        </div>
-        <div class="form-group">
-            {{form.examinfo.label(class="form-group")}}
-            {{form.examinfo(class="form-control")}}
+            <div class="form-group col-md-6">
+                {{form.seatnum.label(class="form-group")}}
+                {{form.seatnum(class="form-control")}}
+            </div>
         </div>
         <div class="form-group">
             {{form.hidden_tag()}}
-            {{form.submit(class="btn btn-primary form-control")}}
+            {{form.submit(class="btn btn-primary")}}
         </div>
     </form>
 {% endblock %}
