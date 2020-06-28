@@ -127,4 +127,4 @@ class ExamDetails(db.Model):
         self.exam_id = Exam.query.filter_by(module_id = module_id).first().id
     
     def __repr__(self):
-        return f"<Exam Details {self.module_id}, {self.nusnetid}, {self.seatnum}>"
+        return f"<Exam Details {self.nusnetid}, {self.exam_id}, {self.seatnum}>"
