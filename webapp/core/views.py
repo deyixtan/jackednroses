@@ -21,8 +21,8 @@ def index():
         task_exam_list.extend(mod.tasks)
         task_exam_list.extend(mod.exams)
 
-        exam = Exam.query.get(mod.id)
-        if exam:
+        exams = Exam.query.filter_by(module_id=mod.id).all()
+        for exam in exams:
             exam_details_list.extend(exam.examdetails)
 
     announcement_list = sorted(announcement_list, key=lambda x: x.date, reverse=True)

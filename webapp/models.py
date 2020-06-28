@@ -113,7 +113,7 @@ class Exam(db.Model):
         self.timestamp = timestamp
     
     def __repr__(self):
-        return f"<Exam {self.id}, {self.module_id}, {self.examname}, {self.timestamp}"
+        return f"<Exam {self.id}, {self.module_id}, {self.examname}, {self.timestamp}>"
 
 
 class ExamDetails(db.Model):
