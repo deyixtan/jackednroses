@@ -30,9 +30,10 @@ def return_data():
         task_exam_list.extend(mod.exams)
 
     for task_exam in task_exam_list:
+        code = Module.query.get(task_exam.module_id).code
         if isinstance(task_exam, Task):
-            events_list.append(create_event(task_exam.taskname, task_exam.timestamp))
+            events_list.append(create_event(f"{code}: {task_exam.taskname}", task_exam.timestamp))
         elif isinstance(task_exam, Exam):
-            events_list.append(create_event(task_exam.examname, task_exam.timestamp))
+            events_list.append(create_event(f"{code}: {task_exam.examname}", task_exam.timestamp))
     
     return json.dumps(events_list)
