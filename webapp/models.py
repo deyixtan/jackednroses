@@ -93,7 +93,7 @@ class Task(db.Model):
         self.timestamp = timestamp
 
     def __repr__(self):
-        return f"<Task {self.id}, {self.module_id}, {self.taskname}, {self.date}"
+        return f"<Task {self.id}, {self.module_id}, {self.taskname}, {self.timestamp}"
 
 
 class Exam(db.Model):
@@ -113,7 +113,7 @@ class Exam(db.Model):
         self.timestamp = timestamp
     
     def __repr__(self):
-        return f"<Exam {self.id}, {self.module_id}, {self.examname}, {self.examdatetime}"
+        return f"<Exam {self.id}, {self.module_id}, {self.examname}, {self.timestamp}"
 
 
 class ExamDetails(db.Model):
