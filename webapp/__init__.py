@@ -33,6 +33,9 @@ def create_app(config_class=Config):
 
     from webapp.core.views import core
     app.register_blueprint(core)
+
+    from webapp.calendar.views import calendar
+    app.register_blueprint(calendar, url_prefix="/calendar")
     
     from webapp.edurec.views import edurec
     app.register_blueprint(edurec, url_prefix="/edurec")
