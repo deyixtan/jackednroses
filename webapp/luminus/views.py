@@ -39,16 +39,14 @@ def view_module(code, plugin_index):
     # plugins
     plugins = []
     for root, dirs, files in os.walk(moduledir):
-        path = root.split(os.sep)
         package_name = os.path.basename(root)
+        #print(f"I'm in {package_name}, files i have=<{files}>, dirs i have=<{dirs}>")
         for file in files:
             if file == "info.json":
                 import json
                 with open(os.path.join(moduledir, package_name, file)) as f:
                     data = json.load(f)
                     plugins.append(data)
-
-    print(plugins)
 
     return render_template("luminus/view_module.html", module=module, plugins=plugins, plugin_index=plugin_index)
 
