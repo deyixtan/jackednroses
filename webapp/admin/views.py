@@ -33,7 +33,7 @@ def module_create():
         db.session.commit()
         #create module directory if successfull
         basedir =  os.path.abspath(os.path.dirname(__name__)) #May be able to reference from config file
-        module_path = os.path.join(basedir,'webapp', 'luminus', 'modules', form.code.data, form.academic_year.data.replace('/', ''), str(form.semester.data))
+        module_path = os.path.join(basedir,'webapp', 'luminus', 'modules', form.code.data, form.academic_year.data.replace('/', ''), str(form.semester.data), "plugins")
         if not os.path.exists(module_path):
             os.makedirs(module_path)
             

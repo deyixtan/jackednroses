@@ -28,8 +28,27 @@ def index(module_index):
          return render_template("luminus/index.html")
 
 
-@luminus.route("/view_module/<code>")
+@luminus.route("/view_module/<code>/", defaults={"plugin_index": 0})
+@luminus.route("/view_module/<code>/<int:plugin_index>")
 @login_required
-def view_module(code):
+def view_module(code, plugin_index):
     module = Module.query.filter_by(code=code).first_or_404()
-    return render_template("luminus/view_module.html", code=module.code, name=module.name, academic_year=module.academic_year, semester=module.semester)
+    basedir = os.path.abspath(os.path.dirname(__name__))
+    moduledir = os.path.join(basedir, "webapp", "luminus", "modules", module.code, module.academic_year.replace('/', ''), str(module.semester), "plugins")
+
+    # plugins
+    plugins = []
+    for root, dirs, files in os.walk(moduledir):
+        path = root.split(os.sep)
+        package_name = os.path.basename(root)
+        for file in files:
+            if file == "info.json":
+                import json
+                with open(os.path.join(moduledir, package_name, file)) as f:
+                    data = json.load(f)
+                    plugins.append(data)
+
+    print(plugins)
+
+    return render_template("luminus/view_module.html", module=module, plugins=plugins, plugin_index=plugin_index)
+
