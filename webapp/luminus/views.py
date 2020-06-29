@@ -1,12 +1,12 @@
 # webapp/luminus/views.py
-from flask import flash, redirect, render_template, url_for
+import os
+from flask import render_template, url_for
 from flask_login import login_required, current_user
 from webapp import db
 from webapp.luminus import luminus
-from webapp.luminus.forms import CreateModuleForm, EnrolToModuleForm
 from webapp.models import Module, Enrolled, User
 from wtforms import ValidationError
-import os
+
 
 @luminus.route("/", defaults={"module_index": 0})
 @luminus.route("/<int:module_index>")
@@ -16,20 +16,23 @@ def index(module_index):
     user = User.query.filter_by(id=current_user.get_id()).first()
     enrolled = Enrolled.query.filter_by(user = user).all()
     module_list = []
-    for mod in enrolled:
-        module_list.append(Module.query.filter_by(id = mod.module_id).first())
+    #Check if user has enrolled modules
+    if enrolled:
+        for mod in enrolled:
+            module_list.append(Module.query.filter_by(id = mod.module_id).first())
 
-    iframe = url_for('luminus.view_module', code=module_list[module_index].code)
+        iframe = url_for('luminus.view_module', code=module_list[module_index].code)
 
-    return render_template("luminus/index.html", module_list=module_list, iframe=iframe)
+        return render_template("luminus/index.html", module_list=module_list, iframe=iframe)
+    else:
+         return render_template("luminus/index.html")
+
 
 @luminus.route("/view_module/<code>/", defaults={"plugin_index": 0})
 @luminus.route("/view_module/<code>/<int:plugin_index>")
 @login_required
 def view_module(code, plugin_index):
     module = Module.query.filter_by(code=code).first_or_404()
-
-    print(f"module_id={module.id}, module_code={module.code}, module_ay={module.academic_year}, module_sem={module.semester}, plugin_index={plugin_index}")
     basedir = os.path.abspath(os.path.dirname(__name__))
     moduledir = os.path.join(basedir, "webapp", "luminus", "modules", module.code, module.academic_year.replace('/', ''), str(module.semester), "plugins")
 
@@ -49,34 +52,3 @@ def view_module(code, plugin_index):
 
     return render_template("luminus/view_module.html", module=module, plugins=plugins, plugin_index=plugin_index)
 
-
-@luminus.route("/register", methods=["GET", "POST"])
-@login_required
-def register():
-    form = CreateModuleForm()
-    if form.validate_on_submit():
-        module = Module(code=form.code.data, name=form.name.data, academic_year=form.academic_year.data, semester=form.semester.data)
-        db.session.add(module)
-        db.session.commit()
-        #create module directory if successfull
-        basedir =  os.path.abspath(os.path.dirname(__name__)) #May be able to reference from config file
-        module_path = os.path.join(basedir,'webapp', 'luminus', 'modules', form.code.data, form.academic_year.data.replace('/', ''), str(form.semester.data))
-        if not os.path.exists(module_path):
-            os.makedirs(module_path)
-            
-        flash("Successfully registered module.", "success")
-        return redirect(url_for("core.index"))
-    return render_template("luminus/register.html", form=form)
-
-@luminus.route("/enrol_to_module", methods=["GET", "POST"])
-@login_required
-def enrol_to_module():
-    form = EnrolToModuleForm()
-    if form.validate_on_submit():
-        enrolled = Enrolled(nusnetid = form.nusnetid.data, code = form.code.data, academic_year = form.academic_year.data, semester = form.semester.data)
-        db.session.add(enrolled)
-        db.session.commit()
-        flash("Successfully enrolled student to module.", "success")
-        #return redirect(url_for(luminus.enrol_to_module))
-        return redirect(url_for("core.index"))
-    return render_template("luminus/enrol_to_module.html", form=form)

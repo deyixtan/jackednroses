@@ -1,10 +1,10 @@
 # webapp/users/views.py
 from flask import flash, redirect, render_template, request, url_for
-from flask_login import login_user, current_user, logout_user, login_required
+from flask_login import login_required, login_user, logout_user
 from webapp import db
 from webapp.models import User
 from webapp.users import users
-from webapp.users.forms import LoginForm, RegistrationForm
+from webapp.users.forms import LoginForm
 
 @users.route("/login", methods=["GET", "POST"])
 def login():
@@ -28,16 +28,3 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for("core.index"))
-
-@users.route("/register", methods=["GET", "POST"])
-def register():
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        user = User(name=form.name.data, nusnetid=form.nusnetid.data, email=form.email.data)
-        user.set_password(form.password.data)
-        db.session.add(user)
-        db.session.commit()
-        flash("Successfully registered account.", "success")
-        return redirect(url_for("users.login"))
-
-    return render_template("register.html", form=form)

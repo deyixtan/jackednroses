@@ -16,6 +16,10 @@ def create_app(config_class=Config):
     # initialize app instance
     app = Flask(__name__)
     app.config.from_object(config_class)
+    app.jinja_env.globals.update(isinstance=isinstance)
+    from webapp.models import Task, Exam
+    app.jinja_env.globals.update(Task=Task)
+    app.jinja_env.globals.update(Exam=Exam)
 
     # initialize flask extensions
     db.init_app(app)
@@ -24,8 +28,14 @@ def create_app(config_class=Config):
     bootstrap.init_app(app)
 
     # blueprint registrations
+    from webapp.admin.views import admin
+    app.register_blueprint(admin, url_prefix="/admin")
+
     from webapp.core.views import core
     app.register_blueprint(core)
+
+    from webapp.calendar.views import calendar
+    app.register_blueprint(calendar, url_prefix="/calendar")
     
     from webapp.edurec.views import edurec
     app.register_blueprint(edurec, url_prefix="/edurec")
