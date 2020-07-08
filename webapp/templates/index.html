@@ -20,7 +20,9 @@
                     
                         <div id="collapse{{ loop.index }}" class="collapse show" aria-labelledby="heading_announcement{{ loop.index }}">
                           <div class="card-body">
-                            {{announcement.body}}
+                            {% for line in announcement.body.splitlines() %}
+                            {{line}} <br>
+                            {% endfor %}
                           </div>
                         </div>
                       </div>
@@ -45,7 +47,9 @@
                     
                         <div id="collapse1{{ loop.index }}" class="collapse show" aria-labelledby="heading_task{{ loop.index }}">
                           <div class="card-body">
-                            {{task_exam.taskinfo}}
+                            {% for line in task_exam.taskinfo.splitlines() %}
+                            {{line}} <br>
+                            {% endfor %}
                           </div>
                         </div>
                       </div>
@@ -69,7 +73,9 @@
                             <div id="collapse_exam{{ loop.index }}" class="collapse show" aria-labelledby="heading_exam{{ loop.index }}">
                               <div class="card-body">
                                 <p style = "font-size:16px">Seat Number: {{current.seatnum}}</p> 
-                                {{task_exam.examinfo}}
+                                {% for line in task_exam.examinfo.splitlines() %}
+                                {{line}} <br>
+                                {% endfor %}
                               </div>
                             </div>
                           </div>

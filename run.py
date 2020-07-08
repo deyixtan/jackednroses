@@ -1,6 +1,6 @@
 # run.py
 from webapp import create_app, db
-from webapp.models import User, Module, Enrolled
+from webapp.models import User, Module, Enrolled, UserDetails
 
 app = create_app()
 
@@ -10,5 +10,6 @@ def make_shell_context():
         "db": db,
         "User": User,
         "Module": Module,
-        "Enrolled": Enrolled
+        "Enrolled": Enrolled,
+        "UserDetails": UserDetails
     }

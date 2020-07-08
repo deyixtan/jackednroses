@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}EduREC{% endblock %}
+
+{% block page_content %}
+<div class="jumbotron">
+    <p class="lead"> <b>Name: </b>{{ userdict['name'] }}</p>
+    <p class="lead"> <b>NUSNET ID: </b>{{ userdict['nusnetid'] }}</p>
+    <p class="lead"> <b>Email: </b>{{ userdict['email'] }}</p>
+    <p class="lead"> <b>NRIC: </b>{{ userdict['nric'] }}</p>
+    <p class="lead"> <b>Gender: </b>{{ userdict['gender'] }}</p>
+    <p class="lead"> <b>Date of Birth: </b>{{ userdict['dob'].strftime("%b %d %Y")}}</p>
+    <p class="lead"> <b>Marital Status: </b>{{ userdict['marital_status'] }}</p>
+    <p class="lead"> <b>Nationality: </b>{{ userdict['nationality'] }}</p>
+    <p class="lead"> <b>Mobile Number: </b>{{ userdict['mobilenum'] }}</p>
+    <p class="lead"> <b>Home Number: </b>{{ userdict['homenum'] }}</p>
+    <p class="lead"> <b>Address: </b> <br>{% for line in userdict['address'].splitlines() %}
+    {{ line }} <br>
+    {% endfor %}
+    </p>
+    <p class="lead"> <b>Emergency Contact Name: </b>{{ userdict['emergencycontactname'] }}</p>
+    <p class="lead"> <b>Emergency Contact Num: </b>{{ userdict['emergencycontactnum'] }}</p>
+</div>
+<a class="btn btn-info col-sm-12" href="{{ url_for('edurec.update_information') }}">Update Information</a>
+{% endblock %}
