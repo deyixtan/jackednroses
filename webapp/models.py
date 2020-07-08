@@ -19,6 +19,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(64), unique=True, index=True)
     profile_img = db.Column(db.String(20), nullable=False, default="default_profile.png")
     enrolled = db.relationship('Enrolled', backref = 'user')
+    examdetails = db.relationship('ExamDetails', backref = "user")
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -28,6 +29,15 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return f"<User {self.id}>"
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "nusnetid": self.nusnetid,
+            "email": self.email,
+            "profile_img": self.profile_img
+        }
 
 
 class Module(db.Model):
@@ -43,7 +53,16 @@ class Module(db.Model):
     exams = db.relationship('Exam', backref = 'module')
 
     def __repr__(self):
-        return f"<Module {self.id}>"      
+        return f"<Module {self.id}>"
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "code": self.code,
+            "name": self.name,
+            "academic_year": self.academic_year,
+            "semester": self.semester
+        }
 
 
 class Enrolled(db.Model):
@@ -76,6 +95,15 @@ class Announcement(db.Model):
 
     def __repr__(self):
         return f"<Announcement {self.id}, {self.module_id}, {self.title}, {self.date}"
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "module_id": self.module_id,
+            "date": self.date,
+            "title": self.title,
+            "body": self.body
+        }
     
 
 class Task(db.Model):
@@ -94,6 +122,15 @@ class Task(db.Model):
 
     def __repr__(self):
         return f"<Task {self.id}, {self.module_id}, {self.taskname}, {self.timestamp}"
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "module_id": self.module_id,
+            "taskname": self.taskname,
+            "taskinfo": self.taskinfo,
+            "timestamp": self.timestamp
+        }
 
 
 class Exam(db.Model):
@@ -114,6 +151,16 @@ class Exam(db.Model):
     
     def __repr__(self):
         return f"<Exam {self.id}, {self.module_id}, {self.examname}, {self.timestamp}>"
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "module_id": self.module_id,
+            "examname": self.examname,
+            "examinfo": self.examinfo,
+            "location": self.location,
+            "timestamp": self.timestamp
+        }
 
 
 class ExamDetails(db.Model):
