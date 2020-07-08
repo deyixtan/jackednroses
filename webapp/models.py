@@ -19,7 +19,8 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(64), unique=True, index=True)
     profile_img = db.Column(db.String(20), nullable=False, default="default_profile.png")
     enrolled = db.relationship('Enrolled', backref = 'user')
-    examdetails = db.relationship('ExamDetails', backref = "user")
+    examdetails = db.relationship('ExamDetails', backref = 'user')
+    userdetails = db.relationship('UserDetails', backref = 'user')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -175,3 +176,20 @@ class ExamDetails(db.Model):
     
     def __repr__(self):
         return f"<Exam Details {self.nusnetid}, {self.exam_id}, {self.seatnum}>"
+
+class UserDetails(db.Model):
+    __tablename__ = 'userdetails'
+    nusnetid = db.Column(db.String(64), db.ForeignKey('users.nusnetid'), primary_key=True)
+    nric = db.Column(db.String(9), unique=True, index=True)
+    gender = db.Column(db.String(16))
+    dob = db.Column(db.DateTime)
+    marital_status = db.Column(db.String(16))
+    nationality = db.Column(db.String(32))
+    mobilenum = db.Column(db.Integer)
+    homenum = db.Column(db.Integer)
+    address = db.Column(db.String(128))
+    emergencycontactname = db.Column(db.String(64))
+    emergencycontactnum = db.Column(db.Integer)
+        
+    def __repr__(self):
+        return f"<User {self.nric}, {self.mobilenum}>"

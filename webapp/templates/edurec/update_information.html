@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}EduREC Update Information{% endblock %}
+
+{% block page_content %}
+<form method="POST">
+    {% for error in form.errors %}
+        <div class="alert alert-danger" role="alert">
+            <a class="close" data-dismiss="alert">×</a>
+            <span>{{form.errors[error][0]}}</span>
+        </div>
+    {% endfor %}
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            {{form.nric.label(class="form-group")}}
+            {{form.nric(class="form-control")}}
+        </div>                   
+        <div class="form-group col-md-4">
+            {{form.gender.label(class="form-group")}}
+            {{form.gender(class="form-control")}}
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-7">
+            {{form.dob.label(class="form-group")}}
+            {{form.dob(class="form-control")}}
+        </div>
+        <div class="form-group col-md-5">
+            {{form.marital_status.label(class="form-group")}}
+            {{form.marital_status(class="form-control")}}
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            {{form.nationality.label(class="form-group")}}
+            {{form.nationality(class="form-control")}}
+        </div>
+        <div class="form-group col-md-4">
+            {{form.mobilenum.label(class="form-group")}}
+            {{form.mobilenum(class="form-control")}}
+        </div> 
+        <div class="form-group col-md-4">
+            {{form.homenum.label(class="form-group")}}
+            {{form.homenum(class="form-control")}}
+        </div>
+    </div>
+    <div class="form-group">
+        {{form.address.label(class="form-group")}}
+        {{form.address(class="form-control")}}
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            {{form.emergencycontactname.label(class="form-group")}}
+            {{form.emergencycontactname(class="form-control")}}
+        </div> 
+        <div class="form-group col-md-4">
+            {{form.emergencycontactnum.label(class="form-group")}}
+            {{form.emergencycontactnum(class="form-control")}}
+        </div>
+    </div>
+    <div class="form-group">
+        {{form.hidden_tag()}}
+        {{form.submit(class="btn btn-primary form-control")}}
+    </div>
+</form>
+{% endblock %}
