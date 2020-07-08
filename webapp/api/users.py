@@ -29,6 +29,17 @@ def fetch_modules_enrolled(user_id):
     return render_data(serialize_data(enrolled_modules))
 
 
+@api.route("/users/<int:user_id>/userdetails")
+def fetch_user_details(user_id):
+    user = User.query.get(user_id)
+
+    details = list()
+    for entry in user.userdetails:
+        details.append(entry)
+
+    return render_data(serialize_data(details))
+
+
 @api.route("/users/<int:user_id>/examdetails")
 def fetch_user_exams(user_id):
     user = User.query.get(user_id)

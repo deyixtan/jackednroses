@@ -193,3 +193,18 @@ class UserDetails(db.Model):
         
     def __repr__(self):
         return f"<User {self.nric}, {self.mobilenum}>"
+
+    def serialize(self):
+        return {
+            "nusnetid": self.nusnetid,
+            "nric": self.nric,
+            "gender": self.gender,
+            "dob": self.dob,
+            "marital_status": self.marital_status,
+            "nationality": self.nationality,
+            "mobilenum": self.mobilenum,
+            "homenum": self.homenum,
+            "address": self.address,
+            "emergencycontactname": self.emergencycontactname,
+            "emergencycontactnum": self.emergencycontactnum
+        }
