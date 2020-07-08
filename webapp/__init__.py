@@ -31,6 +31,9 @@ def create_app(config_class=Config):
     from webapp.admin.views import admin
     app.register_blueprint(admin, url_prefix="/admin")
 
+    from webapp.api import api
+    app.register_blueprint(api, url_prefix="/api")
+
     from webapp.core.views import core
     app.register_blueprint(core)
 
