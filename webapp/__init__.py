@@ -43,8 +43,8 @@ def create_app(config_class=Config):
     from webapp.edurec import bp as edurec_bp
     app.register_blueprint(edurec_bp, url_prefix="/edurec")
 
-    from webapp.error_pages import bp as error_pages_bp
-    app.register_blueprint(error_pages_bp)
+    from webapp.errors import bp as errors_bp
+    app.register_blueprint(errors_bp)
 
     from webapp.luminus import bp as luminus_bp
     app.register_blueprint(luminus_bp, url_prefix="/luminus")
