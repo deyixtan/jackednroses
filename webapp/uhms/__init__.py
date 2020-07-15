@@ -1,4 +1,3 @@
-# webapp/uhms/__init__.py
 from flask import Blueprint
 
 uhms = Blueprint("uhms", __name__)

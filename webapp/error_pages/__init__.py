@@ -1,4 +1,3 @@
-# webapp/error_pages/__init__.py
 from flask import Blueprint
 
 error_pages = Blueprint("error_pages", __name__)

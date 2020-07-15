@@ -1,40 +1,39 @@
-# webapp/edurec/views.py
-from flask import render_template, redirect, url_for, flash
+from flask import jsonify, render_template, redirect, url_for, flash
 from flask_login import login_required, current_user
 from webapp import db
-from webapp.models import User, UserDetails
 from webapp.edurec import edurec
 from webapp.edurec.forms import UserDetailsCreateForm
-from flask import jsonify
+from webapp.models import User, UserDetails
+
 
 @edurec.route("/")
 @login_required
 def index():
-    #find user and userdetail object of user
+    # find user and userdetail object of user
     user = User.query.get(current_user.get_id())
     userdetails = UserDetails.query.filter_by(nusnetid=user.nusnetid).first()
-    #if new user and no user details found
+    # if new user and no user details found
     if not userdetails:
         return redirect(url_for('edurec.update_information'))
-    #user details exist
+    # user details exist
     else:
-        #DICTIONARY WORK HERE
+        # DICTIONARY WORK HERE
         userdict = {
-            'name' : user.name,
-            'nusnetid' : user.nusnetid,
-            'email' : user.email,
-            'nric' : userdetails.nric,
-            'gender' : userdetails.gender,
-            'dob' : userdetails.dob,
-            'marital_status' : userdetails.marital_status,
-            'nationality' : userdetails.nationality,
-            'mobilenum' : userdetails.mobilenum,
-            'homenum' : userdetails.homenum,
-            'address' : userdetails.address,
-            'emergencycontactname' : userdetails.emergencycontactname,
-            'emergencycontactnum' : userdetails.emergencycontactnum,
+            'name': user.name,
+            'nusnetid': user.nusnetid,
+            'email': user.email,
+            'nric': userdetails.nric,
+            'gender': userdetails.gender,
+            'dob': userdetails.dob,
+            'marital_status': userdetails.marital_status,
+            'nationality': userdetails.nationality,
+            'mobilenum': userdetails.mobilenum,
+            'homenum': userdetails.homenum,
+            'address': userdetails.address,
+            'emergencycontactname': userdetails.emergencycontactname,
+            'emergencycontactnum': userdetails.emergencycontactnum,
         }
-        #return jsonify(userdict)
+        # return jsonify(userdict)
         return render_template('edurec/index.html', userdict=userdict)
 
 
@@ -42,8 +41,8 @@ def index():
 @login_required
 def update_information():
     form = UserDetailsCreateForm()
-    userdetails = UserDetails.query.filter_by(nusnetid = User.query.get(current_user.get_id()).nusnetid).first()
-    #if userdetails are present, auto fill for user to update
+    userdetails = UserDetails.query.filter_by(nusnetid=User.query.get(current_user.get_id()).nusnetid).first()
+    # if userdetails are present, auto fill for user to update
     if userdetails:
         form.nric.data = userdetails.nric
         userdetails.gender = form.gender.data = userdetails.gender
@@ -56,12 +55,11 @@ def update_information():
         form.emergencycontactname.data = userdetails.emergencycontactname
         form.emergencycontactnum.data = userdetails.emergencycontactnum
     if form.validate_on_submit():
-        #if userdetails does not exist, add entry to table
+        # if userdetails does not exist, add entry to table
         if not userdetails:
-            userdetails = UserDetails(nusnetid = User.query.get(current_user.get_id()).nusnetid, nric = form.nric.data, gender = form.gender.data, dob = form.dob.data, marital_status = form.marital_status.data, nationality = form.nationality.data,  
-            mobilenum = form.mobilenum.data, homenum = form.homenum.data, address = form.address.data, emergencycontactname = form.emergencycontactname.data, emergencycontactnum = form.emergencycontactnum.data)
+            userdetails = UserDetails(nusnetid=User.query.get(current_user.get_id()).nusnetid, nric=form.nric.data, gender=form.gender.data, dob=form.dob.data, marital_status=form.marital_status.data, nationality=form.nationality.data, mobilenum=form.mobilenum.data, homenum=form.homenum.data, address=form.address.data, emergencycontactname=form.emergencycontactname.data, emergencycontactnum=form.emergencycontactnum.data)
             db.session.add(userdetails)
-        #if exist, update fields respectively
+        # if exist, update fields respectively
         else:
             userdetails.nusnetid = User.query.get(current_user.get_id()).nusnetid
             userdetails.nric = form.nric.data
@@ -77,4 +75,4 @@ def update_information():
         db.session.commit()
         flash("Successfully updated user information", "success")
         return redirect(url_for('edurec.index'))
-    return render_template("edurec/update_information.html", form = form)
+    return render_template("edurec/update_information.html", form=form)

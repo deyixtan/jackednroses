@@ -1,9 +1,8 @@
-# webapp/models.py
+import datetime
+import pytz
 from flask_login import UserMixin
 from webapp import db, login_manager
 from werkzeug.security import check_password_hash, generate_password_hash
-import datetime
-import pytz
 
 
 @login_manager.user_loader

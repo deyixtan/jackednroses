@@ -1,4 +1,3 @@
-# webapp/admin/forms.py
 from flask_wtf import FlaskForm
 from webapp.models import Announcement, Enrolled, Exam, ExamDetails, Module, Task, User
 from wtforms import IntegerField, PasswordField, StringField, SubmitField, TextAreaField, ValidationError

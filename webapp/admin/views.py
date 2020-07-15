@@ -1,4 +1,3 @@
-# webapp/admin/views.py
 import os
 from flask import flash, render_template
 from webapp import db

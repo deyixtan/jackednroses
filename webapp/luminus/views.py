@@ -1,31 +1,30 @@
-# webapp/luminus/views.py
 import os
 from flask import render_template, url_for
-from flask_login import login_required, current_user
+from flask_login import current_user, login_required
+from wtforms import ValidationError
 from webapp import db
 from webapp.luminus import luminus
-from webapp.models import Module, Enrolled, User
-from wtforms import ValidationError
+from webapp.models import Enrolled, Module, User
 
 
 @luminus.route("/", defaults={"module_index": 0})
 @luminus.route("/<int:module_index>")
 @login_required
 def index(module_index):
-    #Gets the NUSNET ID of the current user
+    # Gets the NUSNET ID of the current user
     user = User.query.filter_by(id=current_user.get_id()).first()
-    enrolled = Enrolled.query.filter_by(user = user).all()
+    enrolled = Enrolled.query.filter_by(user=user).all()
     module_list = []
-    #Check if user has enrolled modules
+    # Check if user has enrolled modules
     if enrolled:
         for mod in enrolled:
-            module_list.append(Module.query.filter_by(id = mod.module_id).first())
+            module_list.append(Module.query.filter_by(id=mod.module_id).first())
 
         iframe = url_for('luminus.view_module', code=module_list[module_index].code)
 
         return render_template("luminus/index.html", module_list=module_list, iframe=iframe)
     else:
-         return render_template("luminus/index.html")
+        return render_template("luminus/index.html")
 
 
 @luminus.route("/view_module/<code>/", defaults={"plugin_index": 0})
@@ -40,7 +39,7 @@ def view_module(code, plugin_index):
     plugins = []
     for root, dirs, files in os.walk(moduledir):
         package_name = os.path.basename(root)
-        #print(f"I'm in {package_name}, files i have=<{files}>, dirs i have=<{dirs}>")
+        # print(f"I'm in {package_name}, files i have=<{files}>, dirs i have=<{dirs}>")
         for file in files:
             if file == "info.json":
                 import json
@@ -49,4 +48,3 @@ def view_module(code, plugin_index):
                     plugins.append(data)
 
     return render_template("luminus/view_module.html", module=module, plugins=plugins, plugin_index=plugin_index)
-
