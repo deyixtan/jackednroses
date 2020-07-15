@@ -2,6 +2,7 @@ from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_migrate import Migrate
+from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from config import Config
 
@@ -10,6 +11,7 @@ migrate = Migrate()
 login_manager = LoginManager()
 login_manager.login_view = "users.login"
 bootstrap = Bootstrap()
+moment = Moment()
 
 
 def create_app(config_class=Config):
@@ -26,6 +28,7 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     login_manager.init_app(app)
     bootstrap.init_app(app)
+    moment.init_app(app)
 
     # blueprint registrations
     from webapp.admin import bp as admin_bp

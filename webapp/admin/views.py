@@ -1,4 +1,5 @@
 import os
+import pytz
 from flask import flash, render_template
 from webapp import db
 from webapp.admin import bp
@@ -17,7 +18,6 @@ def module_annoucement_create():
     if form.validate_on_submit():
         announcement = Announcement(title=form.title.data, body=form.body.data)
         announcement.set_module(form.code.data, form.academic_year.data, form.semester.data)
-        announcement.set_timestamp()
         db.session.add(announcement)
         db.session.commit()
         flash("Successfully published announcement.", "success")
@@ -45,9 +45,8 @@ def module_create():
 def module_exam_create():
     form = ModuleExamCreateForm()
     if form.validate_on_submit():
-        exam = Exam(examname=form.examname.data, examinfo=form.examinfo.data, location=form.location.data)
+        exam = Exam(examname=form.examname.data, examinfo=form.examinfo.data, location=form.location.data, timestamp=form.timestamp.data.astimezone(pytz.UTC))
         exam.set_module(form.code.data, form.academic_year.data, form.semester.data)
-        exam.set_timestamp(form.timestamp.data)
         db.session.add(exam)
         db.session.commit()
         flash("Successfully published exam details", "success")
@@ -70,9 +69,8 @@ def module_exam_user_create():
 def module_task_create():
     form = ModuleTaskCreateForm()
     if form.validate_on_submit():
-        task = Task(taskname=form.taskname.data, taskinfo=form.taskinfo.data)
+        task = Task(taskname=form.taskname.data, taskinfo=form.taskinfo.data, timestamp=form.timestamp.data.astimezone(pytz.UTC))
         task.set_module(form.code.data, form.academic_year.data, form.semester.data)
-        task.set_timestamp(form.timestamp.data)
         db.session.add(task)
         db.session.commit()
         flash("Successfully published task.", "success")

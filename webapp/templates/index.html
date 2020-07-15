@@ -14,7 +14,7 @@
                             <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ loop.index }}">
                               {{announcement.module.code}}:  {{announcement.title}} <br>                                                      
                             </button>
-                            <p style = "font-size:16px">&nbsp &nbsp{{announcement.date.strftime('%B %d %Y')}}</p>
+                            <p style = "font-size:16px">&nbsp &nbsp{{ moment(announcement.date).fromNow() }}</p>
                           </h2>
                         </div>
                     
@@ -41,7 +41,7 @@
                               {{task_exam.module.code}}:  {{task_exam.taskname}}
                               <br>                                                      
                             </button>
-                            <p style = "font-size:16px">&nbsp &nbsp{{task_exam.timestamp.strftime("Due Date: %m/%d/%Y, %H%M")}}</p>
+                            <p style = "font-size:16px">&nbsp &nbsp{{ moment(task_exam.timestamp).fromNow() }}</p>
                           </h2>
                         </div>
                     
@@ -65,7 +65,7 @@
                                   {{task_exam.module.code}}:  {{task_exam.examname}}
                                   <br>                                                      
                                 </button>
-                                <p style = "font-size:16px">&nbsp &nbsp{{task_exam.timestamp.strftime("Test Date: %m/%d/%Y, %H%M")}}</p>
+                                <p style = "font-size:16px">&nbsp &nbsp{{ moment(task_exam.timestamp).fromNow() }}</p>
                                 <p style = "font-size:16px">&nbsp &nbspLocation:  {{task_exam.location}}</p>
                               </h2>
                             </div>

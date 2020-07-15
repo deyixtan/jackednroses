@@ -1,5 +1,4 @@
-import datetime
-import pytz
+from datetime import datetime
 from flask_login import UserMixin
 from webapp import db, login_manager
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -65,16 +64,12 @@ class Announcement(db.Model):
     __tablename__ = "announcements"
     id = db.Column(db.Integer, primary_key=True)
     module_id = db.Column(db.Integer, db.ForeignKey('modules.id'))
-    date = db.Column(db.DateTime)
+    date = db.Column(db.DateTime, default=datetime.utcnow)
     title = db.Column(db.String(32))
     body = db.Column(db.String(1024))
 
     def set_module(self, code, academic_year, semester):
         self.module_id = Module.query.filter_by(code=code, academic_year=academic_year, semester=semester).first().id
-
-    def set_timestamp(self):
-        dt = datetime.datetime.now(tz=pytz.UTC)
-        self.date = dt.astimezone(pytz.timezone('Asia/Singapore'))
 
     def __repr__(self):
         return f"<Announcement {self.id}, {self.module_id}, {self.title}, {self.date}"
@@ -90,9 +85,6 @@ class Task(db.Model):
 
     def set_module(self, code, academic_year, semester):
         self.module_id = Module.query.filter_by(code=code, academic_year=academic_year, semester=semester).first().id
-
-    def set_timestamp(self, timestamp):
-        self.timestamp = timestamp
 
     def __repr__(self):
         return f"<Task {self.id}, {self.module_id}, {self.taskname}, {self.timestamp}"
@@ -110,9 +102,6 @@ class Exam(db.Model):
 
     def set_module(self, code, academic_year, semester):
         self.module_id = Module.query.filter_by(code=code, academic_year=academic_year, semester=semester).first().id
-
-    def set_timestamp(self, timestamp):
-        self.timestamp = timestamp
 
     def __repr__(self):
         return f"<Exam {self.id}, {self.module_id}, {self.examname}, {self.timestamp}>"
