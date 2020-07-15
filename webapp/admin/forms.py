@@ -5,7 +5,7 @@ from wtforms.fields.html5 import DateTimeLocalField
 from wtforms.validators import DataRequired, Email, EqualTo
 
 
-class ModuleAnnoucementCreateForm(FlaskForm):
+class ModuleAnnouncementCreateForm(FlaskForm):
     code = StringField("Code", validators=[DataRequired()])
     academic_year = StringField("Academic Year", render_kw={"placeholder": "eg. 2019/2020"}, validators=[DataRequired()])
     semester = IntegerField("Semester", validators=[DataRequired()])

@@ -3,7 +3,7 @@ import pytz
 from flask import flash, render_template
 from webapp import db
 from webapp.admin import bp
-from webapp.admin.forms import ModuleAnnoucementCreateForm, ModuleCreateForm, ModuleExamCreateForm, ModuleExamUserCreateForm, ModuleTaskCreateForm, ModuleUserCreateForm, UserCreateForm
+from webapp.admin.forms import ModuleAnnouncementCreateForm, ModuleCreateForm, ModuleExamCreateForm, ModuleExamUserCreateForm, ModuleTaskCreateForm, ModuleUserCreateForm, UserCreateForm
 from webapp.models import Announcement, Enrolled, Exam, ExamDetails, Module, Task, User
 
 
@@ -12,16 +12,16 @@ def index():
     return render_template("admin_index.html")
 
 
-@bp.route("/module_annoucement_create", methods=["GET", "POST"])
-def module_annoucement_create():
-    form = ModuleAnnoucementCreateForm()
+@bp.route("/module_announcement_create", methods=["GET", "POST"])
+def module_announcement_create():
+    form = ModuleAnnouncementCreateForm()
     if form.validate_on_submit():
         announcement = Announcement(title=form.title.data, body=form.body.data)
         announcement.set_module(form.code.data, form.academic_year.data, form.semester.data)
         db.session.add(announcement)
         db.session.commit()
         flash("Successfully published announcement.", "success")
-    return render_template("admin_module_annoucement_create.html", form=form)
+    return render_template("admin_module_announcement_create.html", form=form)
 
 
 @bp.route("/module_create", methods=["GET", "POST"])
