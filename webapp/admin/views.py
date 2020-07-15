@@ -1,17 +1,17 @@
 import os
 from flask import flash, render_template
 from webapp import db
-from webapp.admin import admin
+from webapp.admin import bp
 from webapp.admin.forms import ModuleAnnoucementCreateForm, ModuleCreateForm, ModuleExamCreateForm, ModuleExamUserCreateForm, ModuleTaskCreateForm, ModuleUserCreateForm, UserCreateForm
 from webapp.models import Announcement, Enrolled, Exam, ExamDetails, Module, Task, User
 
 
-@admin.route("/")
+@bp.route("/")
 def index():
     return render_template("admin_index.html")
 
 
-@admin.route("/module_annoucement_create", methods=["GET", "POST"])
+@bp.route("/module_annoucement_create", methods=["GET", "POST"])
 def module_annoucement_create():
     form = ModuleAnnoucementCreateForm()
     if form.validate_on_submit():
@@ -24,7 +24,7 @@ def module_annoucement_create():
     return render_template("admin_module_annoucement_create.html", form=form)
 
 
-@admin.route("/module_create", methods=["GET", "POST"])
+@bp.route("/module_create", methods=["GET", "POST"])
 def module_create():
     form = ModuleCreateForm()
     if form.validate_on_submit():
@@ -41,7 +41,7 @@ def module_create():
     return render_template("admin_module_create.html", form=form)
 
 
-@admin.route("/module_exam_create", methods=["GET", "POST"])
+@bp.route("/module_exam_create", methods=["GET", "POST"])
 def module_exam_create():
     form = ModuleExamCreateForm()
     if form.validate_on_submit():
@@ -54,7 +54,7 @@ def module_exam_create():
     return render_template("admin_module_exam_create.html", form=form)
 
 
-@admin.route("/module_exam_user_create", methods=["GET", "POST"])
+@bp.route("/module_exam_user_create", methods=["GET", "POST"])
 def module_exam_user_create():
     form = ModuleExamUserCreateForm()
     if form.validate_on_submit():
@@ -66,7 +66,7 @@ def module_exam_user_create():
     return render_template("admin_module_exam_user_create.html", form=form)
 
 
-@admin.route("/module_task_create", methods=["GET", "POST"])
+@bp.route("/module_task_create", methods=["GET", "POST"])
 def module_task_create():
     form = ModuleTaskCreateForm()
     if form.validate_on_submit():
@@ -79,7 +79,7 @@ def module_task_create():
     return render_template("admin_module_task_create.html", form=form)
 
 
-@admin.route("/module_user_create", methods=["GET", "POST"])
+@bp.route("/module_user_create", methods=["GET", "POST"])
 def module_user_create():
     form = ModuleUserCreateForm()
     if form.validate_on_submit():
@@ -91,7 +91,7 @@ def module_user_create():
     return render_template("admin_module_user_create.html", form=form)
 
 
-@admin.route("/user_create", methods=["GET", "POST"])
+@bp.route("/user_create", methods=["GET", "POST"])
 def user_create():
     form = UserCreateForm()
     if form.validate_on_submit():

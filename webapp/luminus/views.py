@@ -3,12 +3,12 @@ from flask import render_template, url_for
 from flask_login import current_user, login_required
 from wtforms import ValidationError
 from webapp import db
-from webapp.luminus import luminus
+from webapp.luminus import bp
 from webapp.models import Enrolled, Module, User
 
 
-@luminus.route("/", defaults={"module_index": 0})
-@luminus.route("/<int:module_index>")
+@bp.route("/", defaults={"module_index": 0})
+@bp.route("/<int:module_index>")
 @login_required
 def index(module_index):
     # Gets the NUSNET ID of the current user
@@ -27,8 +27,8 @@ def index(module_index):
         return render_template("luminus/index.html")
 
 
-@luminus.route("/view_module/<code>/", defaults={"plugin_index": 0})
-@luminus.route("/view_module/<code>/<int:plugin_index>")
+@bp.route("/view_module/<code>/", defaults={"plugin_index": 0})
+@bp.route("/view_module/<code>/<int:plugin_index>")
 @login_required
 def view_module(code, plugin_index):
     module = Module.query.filter_by(code=code).first_or_404()

@@ -1,12 +1,12 @@
 from flask import jsonify, render_template, redirect, url_for, flash
 from flask_login import login_required, current_user
 from webapp import db
-from webapp.edurec import edurec
+from webapp.edurec import bp
 from webapp.edurec.forms import UserDetailsCreateForm
 from webapp.models import User, UserDetails
 
 
-@edurec.route("/")
+@bp.route("/")
 @login_required
 def index():
     # find user and userdetail object of user
@@ -37,7 +37,7 @@ def index():
         return render_template('edurec/index.html', userdict=userdict)
 
 
-@edurec.route("/update", methods=["GET", "POST"])
+@bp.route("/update", methods=["GET", "POST"])
 @login_required
 def update_information():
     form = UserDetailsCreateForm()

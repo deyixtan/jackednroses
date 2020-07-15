@@ -28,29 +28,29 @@ def create_app(config_class=Config):
     bootstrap.init_app(app)
 
     # blueprint registrations
-    from webapp.admin.views import admin
-    app.register_blueprint(admin, url_prefix="/admin")
+    from webapp.admin import bp as admin_bp
+    app.register_blueprint(admin_bp, url_prefix="/admin")
 
-    from webapp.core.views import core
-    app.register_blueprint(core)
+    from webapp.core import bp as core_bp
+    app.register_blueprint(core_bp)
 
-    from webapp.calendar.views import calendar
-    app.register_blueprint(calendar, url_prefix="/calendar")
+    from webapp.calendar import bp as calendar_bp
+    app.register_blueprint(calendar_bp, url_prefix="/calendar")
 
-    from webapp.edurec.views import edurec
-    app.register_blueprint(edurec, url_prefix="/edurec")
+    from webapp.edurec import bp as edurec_bp
+    app.register_blueprint(edurec_bp, url_prefix="/edurec")
 
-    from webapp.error_pages.handlers import error_pages
-    app.register_blueprint(error_pages)
+    from webapp.error_pages import bp as error_pages_bp
+    app.register_blueprint(error_pages_bp)
 
-    from webapp.luminus.views import luminus
-    app.register_blueprint(luminus, url_prefix="/luminus")
+    from webapp.luminus import bp as luminus_bp
+    app.register_blueprint(luminus_bp, url_prefix="/luminus")
 
-    from webapp.uhms.views import uhms
-    app.register_blueprint(uhms, url_prefix="/uhms")
+    from webapp.uhms import bp as uhms_bp
+    app.register_blueprint(uhms_bp, url_prefix="/uhms")
 
-    from webapp.users.views import users
-    app.register_blueprint(users)
+    from webapp.users import bp as users_bp
+    app.register_blueprint(users_bp)
 
     # return app instance
     return app

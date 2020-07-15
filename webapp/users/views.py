@@ -2,11 +2,11 @@ from flask import flash, redirect, render_template, request, url_for
 from flask_login import login_required, login_user, logout_user
 from webapp import db
 from webapp.models import User
-from webapp.users import users
+from webapp.users import bp
 from webapp.users.forms import LoginForm
 
 
-@users.route("/login", methods=["GET", "POST"])
+@bp.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -24,7 +24,7 @@ def login():
     return render_template("login.html", form=form)
 
 
-@users.route("/logout")
+@bp.route("/logout")
 @login_required
 def logout():
     logout_user()

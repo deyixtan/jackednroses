@@ -1,10 +1,10 @@
 from flask import render_template, request
 from flask_login import current_user, login_required
-from webapp.core import core
+from webapp.core import bp
 from webapp.models import Enrolled, Module, User, Announcement, Task, Exam, ExamDetails
 
 
-@core.route("/")
+@bp.route("/")
 @login_required
 def index():
     # Gets the NUSNET ID of the current user
@@ -31,7 +31,7 @@ def index():
     return render_template("index.html", announcement_list=announcement_list, task_exam_list=task_exam_list, exam_details_list=exam_details_list)
 
 
-@core.route("/account")
+@bp.route("/account")
 @login_required
 def account():
     return render_template("account.html", user=current_user)

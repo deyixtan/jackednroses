@@ -1,11 +1,11 @@
 import json
 from flask import render_template, request
 from flask_login import current_user, login_required
-from webapp.calendar import calendar
+from webapp.calendar import bp
 from webapp.models import Enrolled, Module, User, Announcement, Task, Exam
 
 
-@calendar.route("/")
+@bp.route("/")
 @login_required
 def index():
     return render_template("calendar_index.html")
@@ -19,7 +19,7 @@ def create_event(title, timestamp):
     }
 
 
-@calendar.route("/data")
+@bp.route("/data")
 @login_required
 def return_data():
     user = User.query.filter_by(id=current_user.get_id()).first()

@@ -1,8 +1,8 @@
 from flask_login import login_required
-from webapp.uhms import uhms
+from webapp.uhms import bp
 
 
-@uhms.route("/")
+@bp.route("/")
 @login_required
 def index():
     return "Hello UHMS"
