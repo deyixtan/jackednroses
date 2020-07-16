@@ -4,60 +4,83 @@
 {% block page_content %}
     <div class="row">
         <div class="col-sm-4">
-            <div class="col-sm-12">
-                <h3>Announcements</h3>
-                <div class="list-group">
-                    {% for announcement in announcement_list %}                   
-                    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">{{ announcement.title }}</h5>
-                            <small class="text-muted">{{ moment(announcement.date).fromNow() }}</small>
-                        </div>
-                        {% for line in announcement.body.splitlines() %}
-                        <p class="mb-1">{{ line }}</p>
-                        {% endfor %}
-                        <small class="text-muted">{{ announcement.module.code }}</small>
-                    </a>
-                    {% endfor %}
-                </div>
-            </div>
+            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="pills-announcements-tab" data-toggle="pill" href="#pills-announcements" role="tab" aria-controls="pills-home" aria-selected="true">Announcements</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="pills-tasks-tab" data-toggle="pill" href="#pills-tasks" role="tab" aria-controls="pills-tasks" aria-selected="false">Tasks</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="pills-exams-tab" data-toggle="pill" href="#pills-exams" role="tab" aria-controls="pills-exams" aria-selected="false">Exams</a>
+                </li>
+            </ul>
 
-            <div class="col-sm-12">
-                <h3>Upcoming Tasks/Exams</h3>
-                <div class="list-group">
-                    {% for task_exam in task_exam_list %}                  
-                    <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">
-                                {% if isinstance(task_exam, Task) %}{{ task_exam.taskname }}{% else %}{{ task_exam.examname }}{% endif %}
-                            </h5>
-                            <small class="text-muted">{{ moment(task_exam.timestamp).fromNow() }}</small>
-                        </div>
-                        {% if isinstance(task_exam, Task) %}                     
+            <div class="tab-content" id="pills-tabContent">
+                <div class="tab-pane fade show active" id="pills-announcements" role="tabpanel" aria-labelledby="pills-announcement-tab">
+                    <div class="list-group">
+                        {% for announcement in announcement_list %}                   
+                        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{ announcement.title }}</h5>
+                                <small class="text-muted">{{ moment(announcement.date).fromNow() }}</small>
+                            </div>
+                            {% for line in announcement.body.splitlines() %}
+                            <p class="mb-1">{{ line }}</p>
+                            {% endfor %}
+                            <small class="text-muted">{{ announcement.module.code }}</small>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="pills-tasks" role="tabpanel" aria-labelledby="pills-tasks-tab">
+                    <div class="list-group">
+                        {% for task_exam in task_exam_list %}
+                        {% if isinstance(task_exam, Task) %}               
+                        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{ task_exam.taskname }}</h5>
+                                <small class="text-muted">{{ moment(task_exam.timestamp).fromNow() }}</small>
+                            </div>                     
                             {% for line in task_exam.taskinfo.splitlines() %}
                             <p class="mb-1">{{ line }}</p>
                             {% endfor %}
                             <small class="text-muted">{{ task_exam.module.code }}'s Task</small>
-                        {% else %}
+                        </a>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="pills-exams" role="tabpanel" aria-labelledby="pills-exams-tab">
+                    <div class="list-group">
+                        {% for task_exam in task_exam_list %}
+                        {% if isinstance(task_exam, Exam) %}              
+                        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{ task_exam.examname }}</h5>
+                                <small class="text-muted">{{ moment(task_exam.timestamp).fromNow() }}</small>
+                            </div>
                             {% for details in exam_details_list %}
-                            {% if  details.exam_id ==  task_exam.id %}
-                            {% set current = details %}
-                            <small class="text-muted">Seat No: {{ current.seatnum }}</small>
-                            {% endif %}
+                                {% if details.exam_id ==  task_exam.id %}
+                                    {% set current = details %}
+                                    <small class="text-muted">Seat No: {{ current.seatnum }}</small>
+                                {% endif %}
                             {% endfor %}
                             {% for line in task_exam.examinfo.splitlines() %}
                             <p class="mb-1">{{ line }}</p>
                             {% endfor %}
                             <small class="text-muted">{{ task_exam.module.code }}'s Exam</small>
+                        </a>
                         {% endif %}
-                    </a>
-                    {% endfor %}
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
-
+        <hr>
         <div class="col-sm-8">
-            <h3>Personalised Calendar</h3>
             <div class="embed-responsive embed-responsive-1by1">
                 <iframe class="embed-responsive-item" src="{{ url_for('calendar.index') }}"></iframe>
             </div>
