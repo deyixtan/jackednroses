@@ -5,7 +5,7 @@
 <div class="row">
     <div class="col-sm-4">
         <div class="col-sm-12">
-            <h3 font style="color:#3366ff">Messages</h3>
+            <h3 font style="color:#3333ff">Messages</h3>
             <div class="accordion">
                 {% for message in message_list %}
                 <div class="card">
@@ -26,12 +26,22 @@
                       </div>
                     </div>
                   </div>
-                {% endfor %}
+                {% endfor %} <br>
             </div>
         </div>
         <div class="col-sm-12">
-            <h3 font style="color:#3366ff">Useful Resources</h3>
+          <div class="jumbotron">
+            <h3 font style="color:#3333ff">Personal Details</h3>
+            <hr class="my-4">
+            <p style = "font-size:18px"><b>ID: </b>{{ user.nusnetid }}</p>
+            <p style = "font-size:18px"><b>Name: </b>{{ user.name }}</p>
+            <p style = "font-size:18px"><b>Email: </b>{{ user.email }}</p>
+          </div>
+      </div>
+        <div class="col-sm-12">
             <div class="jumbotron">
+                <h3 font style="color:#3333ff">Useful Resources</h3>
+                <hr class="my-4">
                 <a href="http://nus.edu.sg/osa/contact">Hostal's Contact</a> <br>
                 <a href="https://www.hosteladmission.nus.edu.sg/">Queries? Ask us</a> <br>
                 <a href="http://map.nus.edu.sg/">Campus Map</a>
@@ -40,7 +50,7 @@
     </div>
 
     <div class="col-sm-8">
-        <h3 font style="color:#3366ff">Welcome to the UHMS</h3> <br>
+        <h3 font style="color:#3333ff">Welcome to the UHMS</h3> <br>
         <p style = "font-size:16px">1. If you wish to submit a hostel application/registration, view your results or pay the semester acceptance fee, please click on the "Application" tab located at the top menu or click here. Please note that the online hostel application, registration or acceptance period is from 10.00am (first day) to 11.59pm (last day), Singapore time unless otherwise stated.</p>
         <p style = "font-size:16px">2. If you are unsuccessful in your application and wish to submit an appeal, please click on the "Application"  tab located at the top menu or click here. Choose the relevant term that you are appealing for by clicking the radio button. Click “Save & Continue” button to proceed.</p>
         <p style = "font-size:16px">3. If you have been invoiced by the hostel management office and wish to make an online payment for your hostel fees, please click on the "Fees/Payment" tab located at the top menu.</p>
@@ -58,7 +68,7 @@
         </ul>
         <p style = "font-size:16px">For queries, please submit your queries via <a href="https://www.hosteladmission.nus.edu.sg/">www.hosteladmission.nus.edu.sg</a></p> <br>
         
-        <h4 font style="color:#3366ff">Definitions of Application Status</h3> <br>
+        <h4 font style="color:#3333ff">Definitions of Application Status</h3> <br>
         <ul>
             <li style = "font-size:16px"><b>In-Progress</b> – You have not completed your application/registration.</li>
             <li style = "font-size:16px"><b>Pending</b> – You have completed your application/registration.</li>
