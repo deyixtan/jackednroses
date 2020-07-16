@@ -1,0 +1,25 @@
+{% extends "admin_base.html" %}
+{% block title %}UHMS::Message_Create{% endblock %}
+
+{% block page_content %}
+    <form method="POST">
+        {% for error in form.errors %}
+            <div class="alert alert-danger" role="alert">
+                <a class="close" data-dismiss="alert">×</a>
+                <span>{{form.errors[error][0]}}</span>
+            </div>
+        {% endfor %}
+        <div class="form-group">
+            {{form.title.label(class="form-group")}}
+            {{form.title(class="form-control")}}
+        </div>
+        <div class="form-group">
+            {{form.body.label(class="form-group")}}
+            {{form.body(class="form-control")}}
+        </div>  
+        <div class="form-group">
+            {{form.hidden_tag()}}
+            {{form.submit(class="btn btn-primary form-control")}}
+        </div>
+    </form>
+{% endblock %}

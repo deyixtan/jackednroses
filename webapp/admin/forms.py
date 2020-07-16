@@ -1,6 +1,6 @@
 # webapp/admin/forms.py
 from flask_wtf import FlaskForm
-from webapp.models import Announcement, Enrolled, Exam, ExamDetails, Module, Task, User
+from webapp.models import Announcement, Enrolled, Exam, ExamDetails, Module, Task, User, UhmsMessages
 from wtforms import IntegerField, PasswordField, StringField, SubmitField, TextAreaField, ValidationError
 from wtforms.fields.html5 import DateTimeLocalField
 from wtforms.validators import DataRequired, Email, EqualTo
@@ -151,3 +151,8 @@ class UserCreateForm(FlaskForm):
     def validate_nusnetid(self, field):
         if User.query.filter_by(nusnetid=field.data).first():
             raise ValidationError("Your nusnetid has been registered already!")
+
+class UHMSMessageCreateForm(FlaskForm):
+    title = StringField("Title", validators=[DataRequired()])
+    body = TextAreaField("Body", render_kw={"rows": 10}, validators=[DataRequired()])
+    submit = SubmitField("Publish Message")
