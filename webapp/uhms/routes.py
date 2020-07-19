@@ -9,4 +9,4 @@ from webapp.models import UhmsMessages
 def index():
     message_list = UhmsMessages.query.all()
 
-    return render_template("uhms/index.html", message_list = message_list, user = current_user)
+    return render_template("uhms/index.html", message_list=message_list, user=current_user)
