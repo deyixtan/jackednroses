@@ -4,7 +4,7 @@ from flask import flash, render_template
 from webapp import db
 from webapp.admin import bp
 from webapp.admin.forms import ModuleAnnouncementCreateForm, ModuleCreateForm, ModuleExamCreateForm, ModuleExamUserCreateForm, ModuleTaskCreateForm, ModuleUserCreateForm, UserCreateForm
-from webapp.models import Announcement, Enrolled, Exam, ExamDetails, Module, Task, User
+from webapp.models import Announcement, Enrolled, Exam, ExamDetails, Module, Task, User, UhmsMessages
 
 
 @bp.route("/")
@@ -99,3 +99,15 @@ def user_create():
         db.session.commit()
         flash("Successfully registered account.", "success")
     return render_template("admin_user_create.html", form=form)
+
+
+@admin.route("/uhms_message_create", methods=["GET", "POST"])
+def uhms_message_create():
+    form = UHMSMessageCreateForm()
+    if form.validate_on_submit():
+        message = UhmsMessages(title = form.title.data, body = form.body.data)
+        message.set_timestamp()
+        db.session.add(message)
+        db.session.commit()
+        flash("Successfully published message on UHMS site.", "success")   
+    return render_template("admin_uhms_message_create.html", form=form)
