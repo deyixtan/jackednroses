@@ -14,7 +14,7 @@
                         <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ loop.index }}">
                           {{message.title}} <br>                                                      
                         </button>
-                        <p style = "font-size:16px">&nbsp &nbsp{{message.date.strftime('%B %d %Y')}}</p>
+                        <p style = "font-size:16px">&nbsp &nbsp{{ moment(message.date).fromNow() }}</p>
                       </h2>
                     </div>
                 

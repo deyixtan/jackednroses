@@ -106,7 +106,6 @@ def uhms_message_create():
     form = UHMSMessageCreateForm()
     if form.validate_on_submit():
         message = UhmsMessages(title=form.title.data, body=form.body.data)
-        message.set_timestamp()
         db.session.add(message)
         db.session.commit()
         flash("Successfully published message on UHMS site.", "success")

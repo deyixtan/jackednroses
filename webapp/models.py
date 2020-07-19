@@ -138,16 +138,13 @@ class UserDetails(db.Model):
     def __repr__(self):
         return f"<User {self.nric}, {self.mobilenum}>"
 
+
 class UhmsMessages(db.Model):
     __tablename__ = "uhmsmessages"
-    id = db.Column(db.Integer, primary_key = True)
-    date = db.Column(db.DateTime)
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime, default=datetime.utcnow)
     title = db.Column(db.String(32))
     body = db.Column(db.String(1024))
-
-    def set_timestamp(self):
-        dt = datetime.datetime.now(tz=pytz.UTC)
-        self.date = dt.astimezone(pytz.timezone('Asia/Singapore'))
 
     def __repr__(self):
         return f"<Message {self.id}, {self.module_id}, {self.title}, {self.date}"
