@@ -1,29 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Sign In{% endblock %}
+{% from "bootstrap/form.html" import render_form %}
 
 {% block app_content %}
+    <h1>Sign In</h1>
     <div class="row">
         <div class="col-sm-4">
-        </div>
-
-        <div class="col-sm-4">
-            <form method="POST">
-                <div class="form-group">
-                    {{form.nusnetid.label(class="form-group")}}
-                    {{form.nusnetid(class="form-control")}}
-                </div>
-                <div class="form-group">
-                    {{form.password.label(class="form-group")}}
-                    {{form.password(class="form-control")}}
-                </div>
-                <div class="form-group">
-                    {{form.hidden_tag()}}
-                    {{form.submit(class="btn btn-primary")}}
-                </div>
-            </form>
-        </div>
-        
-        <div class="col-sm-4">    
+            {{ render_form(form) }}
         </div>
     </div>
 {% endblock %}
