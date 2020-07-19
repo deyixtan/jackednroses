@@ -1,8 +1,8 @@
-# webapp/users/forms.py
 from flask_wtf import FlaskForm
-from webapp.models import User
 from wtforms import PasswordField, StringField, SubmitField, ValidationError
 from wtforms.validators import DataRequired, Email, EqualTo
+from webapp.models import User
+
 
 class LoginForm(FlaskForm):
     nusnetid = StringField("NUSNET ID", validators=[DataRequired()])

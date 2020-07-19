@@ -133,3 +133,6 @@ migrations/
 
 # MacOS directory attribute
 .DS_Store
+
+# Development environment
+.vscode/

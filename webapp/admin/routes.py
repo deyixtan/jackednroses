@@ -1,97 +1,95 @@
-# webapp/admin/views.py
 import os
+import pytz
 from flask import flash, render_template
 from webapp import db
-from webapp.admin import admin
-from webapp.admin.forms import ModuleAnnoucementCreateForm, ModuleCreateForm, ModuleExamCreateForm, ModuleExamUserCreateForm, ModuleTaskCreateForm, ModuleUserCreateForm, UserCreateForm, UHMSMessageCreateForm
+from webapp.admin import bp
+from webapp.admin.forms import ModuleAnnouncementCreateForm, ModuleCreateForm, ModuleExamCreateForm, ModuleExamUserCreateForm, ModuleTaskCreateForm, ModuleUserCreateForm, UserCreateForm
 from webapp.models import Announcement, Enrolled, Exam, ExamDetails, Module, Task, User, UhmsMessages
 
-@admin.route("/")
+
+@bp.route("/")
 def index():
     return render_template("admin_index.html")
 
 
-@admin.route("/module_annoucement_create", methods=["GET", "POST"])
-def module_annoucement_create():
-    form = ModuleAnnoucementCreateForm()
+@bp.route("/module_announcement_create", methods=["GET", "POST"])
+def module_announcement_create():
+    form = ModuleAnnouncementCreateForm()
     if form.validate_on_submit():
-        announcement = Announcement(title = form.title.data, body = form.body.data)
+        announcement = Announcement(title=form.title.data, body=form.body.data)
         announcement.set_module(form.code.data, form.academic_year.data, form.semester.data)
-        announcement.set_timestamp()
         db.session.add(announcement)
         db.session.commit()
-        flash("Successfully published announcement.", "success")   
-    return render_template("admin_module_annoucement_create.html", form=form)
+        flash("Successfully published announcement.", "success")
+    return render_template("admin_module_announcement_create.html", form=form)
 
 
-@admin.route("/module_create", methods=["GET", "POST"])
+@bp.route("/module_create", methods=["GET", "POST"])
 def module_create():
     form = ModuleCreateForm()
     if form.validate_on_submit():
         module = Module(code=form.code.data, name=form.name.data, academic_year=form.academic_year.data, semester=form.semester.data)
         db.session.add(module)
         db.session.commit()
-        #create module directory if successfull
-        basedir =  os.path.abspath(os.path.dirname(__name__)) #May be able to reference from config file
-        module_path = os.path.join(basedir,'webapp', 'luminus', 'modules', form.code.data, form.academic_year.data.replace('/', ''), str(form.semester.data), "plugins")
+        # create module directory if successfull
+        basedir = os.path.abspath(os.path.dirname(__name__))
+        module_path = os.path.join(basedir, 'webapp', 'luminus', 'modules', form.code.data, form.academic_year.data.replace('/', ''), str(form.semester.data), "plugins")
         if not os.path.exists(module_path):
             os.makedirs(module_path)
-            
+
         flash("Successfully registered module.", "success")
     return render_template("admin_module_create.html", form=form)
 
 
-@admin.route("/module_exam_create", methods=["GET", "POST"])
+@bp.route("/module_exam_create", methods=["GET", "POST"])
 def module_exam_create():
     form = ModuleExamCreateForm()
     if form.validate_on_submit():
-        exam = Exam(examname = form.examname.data, examinfo = form.examinfo.data, location = form.location.data)
+        exam = Exam(examname=form.examname.data, examinfo=form.examinfo.data, location=form.location.data, timestamp=form.timestamp.data.astimezone(pytz.UTC))
         exam.set_module(form.code.data, form.academic_year.data, form.semester.data)
-        exam.set_timestamp(form.timestamp.data)
         db.session.add(exam)
         db.session.commit()
         flash("Successfully published exam details", "success")
     return render_template("admin_module_exam_create.html", form=form)
 
 
-@admin.route("/module_exam_user_create", methods=["GET", "POST"])
+@bp.route("/module_exam_user_create", methods=["GET", "POST"])
 def module_exam_user_create():
     form = ModuleExamUserCreateForm()
     if form.validate_on_submit():
-        examdetails = ExamDetails(nusnetid = form.nusnetid.data, seatnum = form.seatnum.data)
+        examdetails = ExamDetails(nusnetid=form.nusnetid.data, seatnum=form.seatnum.data)
         examdetails.set_exam(form.code.data, form.academic_year.data, form.semester.data)
         db.session.add(examdetails)
         db.session.commit()
         flash("Successfully enrolled student to exam", "success")
-    return render_template("admin_module_exam_user_create.html", form=form)  
+    return render_template("admin_module_exam_user_create.html", form=form)
 
 
-@admin.route("/module_task_create", methods=["GET", "POST"])
+@bp.route("/module_task_create", methods=["GET", "POST"])
 def module_task_create():
     form = ModuleTaskCreateForm()
     if form.validate_on_submit():
-        task = Task(taskname = form.taskname.data, taskinfo = form.taskinfo.data)
+        task = Task(taskname=form.taskname.data, taskinfo=form.taskinfo.data, timestamp=form.timestamp.data.astimezone(pytz.UTC))
         task.set_module(form.code.data, form.academic_year.data, form.semester.data)
-        task.set_timestamp(form.timestamp.data)
         db.session.add(task)
         db.session.commit()
         flash("Successfully published task.", "success")
     return render_template("admin_module_task_create.html", form=form)
 
 
-@admin.route("/module_user_create", methods=["GET", "POST"])
+@bp.route("/module_user_create", methods=["GET", "POST"])
 def module_user_create():
     form = ModuleUserCreateForm()
     if form.validate_on_submit():
-        enrolled = Enrolled(nusnetid = form.nusnetid.data)
+        enrolled = Enrolled(nusnetid=form.nusnetid.data)
         enrolled.set_module(form.code.data, form.academic_year.data, form.semester.data)
         db.session.add(enrolled)
         db.session.commit()
         flash("Successfully enrolled student to module.", "success")
     return render_template("admin_module_user_create.html", form=form)
-    
 
-@admin.route("/user_create", methods=["GET", "POST"])
+
+@bp.route("/user_create", methods=["GET", "POST"])
 def user_create():
     form = UserCreateForm()
     if form.validate_on_submit():

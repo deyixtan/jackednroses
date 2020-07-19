@@ -1,6 +1,5 @@
-# webapp/uhms/__init__.py
 from flask import Blueprint
 
-uhms = Blueprint("uhms", __name__)
+bp = Blueprint("uhms", __name__)
 
-from webapp.uhms import views
+from webapp.uhms import routes

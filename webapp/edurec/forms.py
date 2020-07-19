@@ -1,9 +1,9 @@
-# webapp/edurec/forms.py
 from flask_wtf import FlaskForm
 from webapp.models import User, UserDetails
 from wtforms import IntegerField, PasswordField, StringField, SubmitField, TextAreaField, ValidationError
 from wtforms.fields.html5 import DateField
 from wtforms.validators import DataRequired, EqualTo
+
 
 class UserDetailsCreateForm(FlaskForm):
     nric = StringField("NRIC", validators=[DataRequired()])

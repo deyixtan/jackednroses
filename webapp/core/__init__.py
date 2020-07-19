@@ -1,6 +1,5 @@
-# webapp/core/__init__.py
 from flask import Blueprint
 
-core = Blueprint("core", __name__)
+bp = Blueprint("core", __name__)
 
-from webapp.core import views
+from webapp.core import routes

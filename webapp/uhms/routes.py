@@ -1,10 +1,10 @@
-# webapp/uhms/views.py
 from flask_login import login_required, current_user
 from flask import render_template, url_for
-from webapp.uhms import uhms
+from webapp.uhms import bp
 from webapp.models import UhmsMessages
 
-@uhms.route("/")
+
+@bp.route("/")
 @login_required
 def index():
     message_list = UhmsMessages.query.all()
