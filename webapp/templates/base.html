@@ -5,10 +5,12 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block navbar %}
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="navbar-nav mr-auto">
             {{ render_nav_item("core.index", "Home") }}
+            {% if current_user.is_authenticated %}
             {{ render_nav_item("luminus.index", "LumiNUS") }}
+            {% endif %}
         </div>
         <div class="navbar-nav navbar-right">
             {% if current_user.is_authenticated %}
@@ -19,8 +21,11 @@
     </nav>
 {% endblock %}
 
-{% block content %}
+{% block messages %} 
     {{ render_messages() }}
+{% endblock %}
+
+{% block content %}
     {% block app_content %}{% endblock %}
 {% endblock %}
 

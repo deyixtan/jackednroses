@@ -14,9 +14,10 @@
         {% endblock %}
     </head>
     <body>
-        <div class="container">
         {% block navbar %}{% endblock %}
-
+        {% block messages %} {% endblock %}
+        
+        <div class="container-fluid">
         {% block content %}{% endblock %}
         </div>
 
