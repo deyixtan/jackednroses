@@ -1,6 +1,5 @@
 from webapp import create_app, db
-from webapp.models import Announcement, Enrolled, Exam, ExamDetails, Module, Task, User, UserDetails
-
+from webapp.models import User, UserProfile, Module, ModuleAnnouncement, ModuleTask, Plugin, UHMSMessage
 app = create_app()
 
 
@@ -8,12 +7,11 @@ app = create_app()
 def make_shell_context():
     return {
         "db": db,
-        "Announcement": Announcement,
-        "Enrolled": Enrolled,
-        "Exam": Exam,
-        "ExamDetails": ExamDetails,
-        "Module": Module,
-        "Task": Task,
         "User": User,
-        "UserDetails": UserDetails
+        "UserProfile": UserProfile,
+        "Module": Module,
+        "ModuleAnnouncement": ModuleAnnouncement,
+        "ModuleTask": ModuleTask,
+        "Plugin": Plugin,
+        "UHMSMessage": UHMSMessage
     }
