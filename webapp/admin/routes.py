@@ -4,8 +4,7 @@ from flask import flash, render_template
 from webapp import db
 from webapp.admin import bp
 from webapp.admin.forms import ModuleAnnouncementCreateForm, ModuleCreateForm, ModuleExamCreateForm, ModuleExamUserCreateForm, ModuleTaskCreateForm, ModuleUserCreateForm, UserCreateForm, UHMSMessageCreateForm
-from webapp.models import Announcement, Enrolled, Exam, ExamDetails, Module, Task, User, UhmsMessages
-
+from webapp.models import ModuleAnnouncement, ModuleTask, Module, User, Plugin, UHMSMessage
 
 @bp.route("/")
 def index():

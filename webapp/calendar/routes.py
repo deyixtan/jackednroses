@@ -2,7 +2,7 @@ import json
 from flask import render_template, request
 from flask_login import current_user, login_required
 from webapp.calendar import bp
-from webapp.models import Enrolled, Module, User, Announcement, Task, Exam
+from webapp.models import ModuleAnnouncement, ModuleTask, Module, User, Plugin, UHMSMessage
 
 
 @bp.route("/")
@@ -22,20 +22,12 @@ def create_event(title, timestamp):
 @bp.route("/data")
 @login_required
 def return_data():
-    user = User.query.filter_by(id=current_user.get_id()).first()
-    enrolled = Enrolled.query.filter_by(user=user).all()
-    task_exam_list = []
-    events_list = []
-    for enrol_entry in enrolled:
-        mod = Module.query.get(enrol_entry.module_id)
-        task_exam_list.extend(mod.tasks)
-        task_exam_list.extend(mod.exams)
-
-    for task_exam in task_exam_list:
-        code = Module.query.get(task_exam.module_id).code
-        if isinstance(task_exam, Task):
-            events_list.append(create_event(f"{code}: {task_exam.taskname}", task_exam.timestamp))
-        elif isinstance(task_exam, Exam):
-            events_list.append(create_event(f"{code}: {task_exam.examname}", task_exam.timestamp))
-
-    return json.dumps(events_list)
+    events = []
+    tasks = current_user.tasks.all()
+    for task in tasks:
+        code = task.module.code
+        title = task.title
+        timestamp = task.timestamp
+        event = create_event(f"{code}: {title}", timestamp)
+        events.append(event)
+    return json.dumps(events)

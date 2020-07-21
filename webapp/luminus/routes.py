@@ -4,27 +4,19 @@ from flask_login import current_user, login_required
 from wtforms import ValidationError
 from webapp import db
 from webapp.luminus import bp
-from webapp.models import Enrolled, Module, User
+from webapp.models import ModuleAnnouncement, ModuleTask, Module, User, Plugin, UHMSMessage
 
 
 @bp.route("/", defaults={"module_index": 0})
 @bp.route("/<int:module_index>")
 @login_required
 def index(module_index):
-    # Gets the NUSNET ID of the current user
-    user = User.query.filter_by(id=current_user.get_id()).first()
-    enrolled = Enrolled.query.filter_by(user=user).all()
-    module_list = []
-    # Check if user has enrolled modules
-    if enrolled:
-        for mod in enrolled:
-            module_list.append(Module.query.filter_by(id=mod.module_id).first())
-
-        iframe = url_for('luminus.view_module', code=module_list[module_index].code)
-
-        return render_template("luminus/index.html", module_list=module_list, iframe=iframe)
+    modules = current_user.get_current_modules()
+    if len(modules) > 0:
+        iframe = url_for('luminus.view_module', code=modules[module_index].code)
+        return render_template("luminus/index.html", title="LumiNUS", modules=modules, iframe=iframe)
     else:
-        return render_template("luminus/index.html")
+        return render_template("luminus/index.html", title="LumiNUS")
 
 
 @bp.route("/view_module/<code>/", defaults={"plugin_index": 0})
@@ -33,7 +25,7 @@ def index(module_index):
 def view_module(code, plugin_index):
     module = Module.query.filter_by(code=code).first_or_404()
     basedir = os.path.abspath(os.path.dirname(__name__))
-    moduledir = os.path.join(basedir, "webapp", "luminus", "modules", module.code, module.academic_year.replace('/', ''), str(module.semester), "plugins")
+    moduledir = os.path.join(basedir, "webapp", "luminus", "modules", module.code, str(module.academic_year), str(module.semester), "plugins")
 
     # plugins
     plugins = []
@@ -48,3 +40,15 @@ def view_module(code, plugin_index):
                     plugins.append(data)
 
     return render_template("luminus/view_module.html", module=module, plugins=plugins, plugin_index=plugin_index)
+
+
+# LUMINUS ROUTES
+
+# PLUGIN ROUTES
+
+@bp.route("/modules/<code>/announcements/")
+@login_required
+def module_announcements(code):
+    module = Module.query.filter_by(code=code).first_or_404()
+    announcements = module.announcements.all()
+    return render_template("plugins/announcements/index.html", announcements=announcements)

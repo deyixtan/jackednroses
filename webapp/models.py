@@ -1,4 +1,5 @@
 from datetime import datetime
+from flask import current_app
 from flask_login import UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
 from webapp import db, login_manager
@@ -10,24 +11,25 @@ def load_user(user_id):
 
 
 # Association Tables
-module_user_map = db.Table(
-    "module_user_map",
-    db.Column("module_id", db.Integer, db.ForeignKey("module.id")),
-    db.Column("user_id", db.Integer, db.ForeignKey("user.id"))
-)
+class ModuleUserMap(db.Model):
+    __tablename__ = "module_user_map"
+    module_id = db.Column(db.Integer, db.ForeignKey("module.id"), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
 
-module_plugin_map = db.Table(
-    "module_plugin_map",
-    db.Column("module_id", db.Integer, db.ForeignKey("module.id")),
-    db.Column("plugin_id", db.Integer, db.ForeignKey("plugin.id"))
-)
 
-module_task_user_map = db.Table(
-    "module_task_user_map",
-    db.Column("task_id", db.Integer, db.ForeignKey("module_task.id")),
-    db.Column("user_id", db.Integer, db.ForeignKey("user.id")),
-    db.Column("info", db.String(1024))
-)
+class ModulePluginMap(db.Model):
+    __tablename__ = "module_plugin_map"
+    module_id = db.Column(db.Integer, db.ForeignKey("module.id"), primary_key=True)
+    plugin_id = db.Column(db.Integer, db.ForeignKey("plugin.id"), primary_key=True)
+
+
+class ModuleTaskUserMap(db.Model):
+    __tablename__ = "module_task_user_map"
+    task_id = db.Column(db.Integer, db.ForeignKey("module_task.id"), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
+    info = db.Column(db.String(1024))
+    user = db.relationship("User", backref="module_task_user")
+    product = db.relationship("ModuleTask", backref="module_task_user")
 
 
 # Object Tables
@@ -38,28 +40,25 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(128), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
-    profile = db.relationship("UserProfile", backref="user", lazy="dynamic")
-    modules = db.relationship(
-        "Module", secondary=module_user_map,
-        primaryjoin="module_user_map.c.module_id == Module.id",
-        secondaryjoin="module_user_map.c.user_id == User.id",
-        backref=db.backref("users", lazy="dynamic"), lazy="dynamic"
-    )
-    tasks = db.relationship(
-        "ModuleTask", secondary=module_task_user_map,
-        primaryjoin="module_task_user_map.c.task_id == ModuleTask.id",
-        secondaryjoin="module_task_user_map.c.user_id == User.id",
-        backref=db.backref("users", lazy="dynamic"), lazy="dynamic"
-    )
+    profile = db.relationship("UserProfile", backref="user", uselist=False, lazy=True)
 
     def __repr__(self):
-        return "<User {self.username}>"
+        return f"<User {self.username}>"
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def get_current_modules(self):
+        return self.modules.filter(
+            Module.academic_year == current_app.config["CURRENT_ACADEMIC_YEAR"],
+            Module.semester == current_app.config["CURRENT_SEMESTER"]
+        ).all()
+
+    def get_tasks(self):
+        return self.tasks.order_by(ModuleTask.timestamp.asc()).all()
 
 
 class UserProfile(db.Model):
@@ -80,7 +79,7 @@ class UserProfile(db.Model):
     emergency_contact_number = db.Column(db.Integer)
 
     def __repr__(self):
-        return "<UserProfile {self.get_full_name}>"
+        return f"<UserProfile {self.get_full_name()}>"
 
     def get_full_name(self):
         return f"{self.first_name} {self.last_name}"
@@ -91,19 +90,31 @@ class Module(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(64), index=True)
     name = db.Column(db.String(64))
-    academic_year = db.Column(db.String(16))
+    academic_year = db.Column(db.Integer)
     semester = db.Column(db.Integer)
     announcements = db.relationship("ModuleAnnouncement", backref="module", lazy="dynamic")
     tasks = db.relationship("ModuleTask", backref="module", lazy="dynamic")
     plugins = db.relationship(
-        "Plugin", secondary=module_plugin_map,
-        primaryjoin="module_plugin_map.c.module_id == Module.id",
-        secondaryjoin="module_plugin_map.c.plugin_id == Plugin.id",
+        "Plugin", secondary=ModulePluginMap.__table__,
+        primaryjoin="ModulePluginMap.module_id == Module.id",
+        secondaryjoin="ModulePluginMap.plugin_id == Plugin.id",
+        backref=db.backref("modules", lazy="dynamic"), lazy="dynamic"
+    )
+    users = db.relationship(
+        "User", secondary=ModuleUserMap.__table__,
+        primaryjoin="ModuleUserMap.module_id == Module.id",
+        secondaryjoin="ModuleUserMap.user_id == User.id",
         backref=db.backref("modules", lazy="dynamic"), lazy="dynamic"
     )
 
     def __repr__(self):
         return f"<Module {self.code}>"
+
+    def get_announcements(self):
+        return self.announcements.order_by(ModuleAnnouncement.timestamp.desc()).all()
+
+    def get_tasks(self):
+        return self.tasks.order_by(ModuleTask.timestamp.asc()).all()
 
     def enable_plugin(self, plugin):
         if not self.is_plugin_enabled(plugin):
@@ -116,7 +127,7 @@ class Module(db.Model):
             db.session.commit()
 
     def is_plugin_enabled(self, plugin):
-        return self.plugins.filter(module_plugin_map.c.plugin_id == plugin.id).count() > 0
+        return self.plugins.filter(ModulePluginMap.plugin_id == Plugin.id).count() > 0
 
 
 class ModuleAnnouncement(db.Model):
@@ -139,6 +150,10 @@ class ModuleTask(db.Model):
     body = db.Column(db.String(1024))
     timestamp = db.Column(db.DateTime)
     location = db.Column(db.String(32))
+    users = db.relationship(
+        "User", secondary=ModuleTaskUserMap.__table__,
+        backref=db.backref("tasks", lazy="dynamic"), lazy="dynamic"
+    )
 
     def __repr__(self):
         return f"<ModuleTask {self.title}>"

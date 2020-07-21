@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from webapp import db
 from webapp.edurec import bp
 from webapp.edurec.forms import UserDetailsCreateForm
-from webapp.models import User, UserDetails
+from webapp.models import ModuleAnnouncement, ModuleTask, Module, User, Plugin, UHMSMessage
 
 
 @bp.route("/")

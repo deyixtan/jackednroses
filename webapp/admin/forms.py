@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from webapp.models import Announcement, Enrolled, Exam, ExamDetails, Module, Task, User, UhmsMessages
+from webapp.models import ModuleAnnouncement, ModuleTask, Module, User, Plugin, UHMSMessage
 from wtforms import IntegerField, PasswordField, StringField, SubmitField, TextAreaField, ValidationError
 from wtforms.fields.html5 import DateTimeLocalField
 from wtforms.validators import DataRequired, Email, EqualTo

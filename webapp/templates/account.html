@@ -3,8 +3,8 @@
 
 {% block app_content %}
     <div class="jumbotron">
-        <h1 class="display-4">{{ user.name }}</h1>
-        <p class="lead">{{ user.email }}</p>
+        <h1 class="display-4">{{ current_user.profile.get_full_name() }}</h1>
+        <p class="lead">{{ current_user.email }}</p>
         <hr class="my-4">
         <p class="lead">
             <a class="btn btn-info" href="{{ url_for('edurec.index') }}">Education Records</a>
