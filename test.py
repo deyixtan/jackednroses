@@ -4,6 +4,7 @@ from webapp import create_app, db
 from webapp.models import User, Module, Enrolled, Announcement, Task, Exam, ExamDetails, UserDetails, UhmsMessages
 from config import Config
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm.exc import FlushError
 
 
 class TestConfig(Config):
@@ -22,26 +23,7 @@ class UserModelCase(unittest.TestCase):
         db.session.remove()
         db.drop_all()
         self.app_context.pop()
-
-    def test_password_hashing(self):
-        u = User(nusnetid="E1234567")
-        u.set_password("warmthecockles")
-        self.assertFalse(u.check_password("titanicSinking"))
-        self.assertTrue(u.check_password("warmthecockles"))
-
-    def test_module_creation_and_enrolllment(self):
-        m = Module(code="CS2100", academic_year="2019/2020", semester=1)
-        db.session.add(m)
-        db.session.commit()
-        u = User(nusnetid="E1234567")
-        e = Enrolled(nusnetid=u.nusnetid)
-        e.set_module(code=m.code, academic_year=m.academic_year, semester=m.semester)
-        db.session.add(u)
-        db.session.add(e)
-        db.session.commit()
-        self.assertEqual(m.check_exist(m), m)
-        self.assertEqual(Enrolled.query.filter_by(nusnetid=u.nusnetid, module_id=m.id).first(), e)
-
+    
     def test_announcement_creation(self):
         m = Module(code="CS2100", academic_year="2019/2020", semester=1)
         db.session.add(m)
@@ -51,14 +33,20 @@ class UserModelCase(unittest.TestCase):
         db.session.commit()
         self.assertEqual(Announcement.query.filter_by(module_id=m.id, title=a.title).first(), a)
 
-    def test_task_creation(self):
-        m = Module(code="CS2100", academic_year="2019/2020", semester=1)
+    def test_enrollment_integrity_check(self):
+        m = Module(code="CS2100", academic_year="2019/2020", semester="1")
+        u = User(nusnetid="E1234567")
         db.session.add(m)
+        db.session.add(u)
         db.session.commit()
-        t = Task(module_id=m.id, taskname="Task Title")
-        db.session.add(t)
+        e = Enrolled(nusnetid=u.nusnetid, module_id=m.id)
+        db.session.add(e)
         db.session.commit()
-        self.assertEqual(Task.query.filter_by(module_id=m.id).first(), t)
+        e2 = Enrolled(nusnetid=u.nusnetid, module_id=m.id)
+        with self.assertRaises(Exception) as context:
+            db.session.add(e2)
+            db.session.commit()
+        self.assertEqual(type(context.exception), FlushError)
 
     def test_exam_creation(self):
         m = Module(code="CS2100", academic_year="2019/2020", semester="1")
@@ -74,6 +62,59 @@ class UserModelCase(unittest.TestCase):
         db.session.commit()
         self.assertEqual(Exam.query.filter_by(module_id=m.id).first(), e)
         self.assertEqual(ExamDetails.query.filter_by(nusnetid=u.nusnetid, exam_id=e.id).first(), ed)
+    
+    def test_exam_enrollment_integrity_check(self):
+        m = Module(code="CS2100", academic_year="2019/2020", semester="1")
+        u = User(nusnetid="E1234567")
+        db.session.add(m)
+        db.session.add(u)
+        db.session.commit()
+        e = Exam(module_id=m.id, examname="Exam Name")
+        db.session.add(e)
+        db.session.commit()
+        ed = ExamDetails(nusnetid=u.nusnetid, exam_id=e.id)
+        db.session.add(ed)
+        db.session.commit()
+        ed2 = ExamDetails(nusnetid=u.nusnetid, exam_id=e.id)
+        with self.assertRaises(Exception) as context:
+            db.session.add(ed2)
+            db.session.commit()
+        self.assertEqual(type(context.exception), FlushError)
+
+    def test_module_creation_and_enrolllment(self):
+        m = Module(code="CS2100", academic_year="2019/2020", semester=1)
+        db.session.add(m)
+        db.session.commit()
+        u = User(nusnetid="E1234567")
+        e = Enrolled(nusnetid=u.nusnetid)
+        e.set_module(code=m.code, academic_year=m.academic_year, semester=m.semester)
+        db.session.add(u)
+        db.session.add(e)
+        db.session.commit()
+        self.assertEqual(m.check_exist(m), m)
+        self.assertEqual(Enrolled.query.filter_by(nusnetid=u.nusnetid, module_id=m.id).first(), e)
+
+    def test_module_integrity_check(self):
+        m = Module(code="CS2100", academic_year="2019/2020", semester=1)
+        db.session.add(m)
+        db.session.commit()
+        m2 = Module(code="CS2100", academic_year="2019/2020", semester=1)
+        self.assertEqual(m2.check_exist(m2), m)
+
+    def test_task_creation(self):
+        m = Module(code="CS2100", academic_year="2019/2020", semester=1)
+        db.session.add(m)
+        db.session.commit()
+        t = Task(module_id=m.id, taskname="Task Title")
+        db.session.add(t)
+        db.session.commit()
+        self.assertEqual(Task.query.filter_by(module_id=m.id).first(), t)
+
+    def test_password_hashing(self):
+        u = User(nusnetid="E1234567")
+        u.set_password("warmthecockles")
+        self.assertFalse(u.check_password("titanicSinking"))
+        self.assertTrue(u.check_password("warmthecockles"))
 
     def test_userdetails_creation(self):
         u = User(nusnetid="E1234567")
@@ -113,13 +154,13 @@ class UserModelCase(unittest.TestCase):
             db.session.add(u2)
             db.session.commit()
         self.assertEqual(type(context.exception), IntegrityError)
-
-    def test_module_integrity_check(self):
-        m = Module(code="CS2100", academic_year="2019/2020", semester=1)
+        
+    def test_uhms_message_creation(self):
+        m = UhmsMessages(title="Announcement Title")
         db.session.add(m)
         db.session.commit()
-        m2 = Module(code="CS2100", academic_year="2019/2020", semester=1)
-        self.assertEqual(m2.check_exist(m2), m)
+        self.assertEqual(UhmsMessages.query.filter_by(title=m.title).first(), m)
+ 
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
