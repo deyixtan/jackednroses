@@ -110,6 +110,9 @@ class Module(db.Model):
     def __repr__(self):
         return f"<Module {self.code}>"
 
+    def get_formatted_name(self):
+        return f"[{self.code.upper()}] {self.name}"
+
     def get_announcements(self):
         return self.announcements.order_by(ModuleAnnouncement.timestamp.desc()).all()
 
@@ -127,7 +130,7 @@ class Module(db.Model):
             db.session.commit()
 
     def is_plugin_enabled(self, plugin):
-        return self.plugins.filter(ModulePluginMap.plugin_id == Plugin.id).count() > 0
+        return self.plugins.filter(ModulePluginMap.plugin_id == plugin.id).count() > 0
 
 
 class ModuleAnnouncement(db.Model):

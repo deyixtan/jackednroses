@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    <div class="row justify-content-md-center">
+        <div class="col-md-6">
+            <ul class="nav nav-tabs w-100" id="myTab" role="tablist">
+                {% for plugin in plugins %}
+                <li class="nav-item">
+                    <a class="nav-link {% if loop.index == 1 %}active{% endif %}" id="{{ plugin.name }}-tab" data-toggle="tab" href="#{{ plugin.name }}" role="tab" aria-controls="{{ plugin.name }}" aria-selected="true">{{ plugin.name.capitalize() }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+            <div class="tab-content w-100" id="myTabContent">
+                {% for plugin in plugins %}
+                <div class="tab-pane fade show {% if loop.index == 1 %}active{% endif %}" id="{{ plugin.name }}" role="tabpanel" aria-labelledby="{{ plugin.name }}-tab">
+                    <div class="embed-responsive embed-responsive-21by9">
+                        <iframe class="embed-responsive-item" src="{{ url_for('luminus.module_plugin_' + plugin.name, module_id=module_id) }}"></iframe>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

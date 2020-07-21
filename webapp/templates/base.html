@@ -9,7 +9,14 @@
         <div class="navbar-nav mr-auto">
             {{ render_nav_item("core.index", "Home") }}
             {% if current_user.is_authenticated %}
-            {{ render_nav_item("luminus.index", "LumiNUS") }}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Modules</a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    {% for module in current_user.modules.all() %}
+                    <a class="dropdown-item" href="{{ url_for('luminus.index', module_index=loop.index-1) }}">{{ module.get_formatted_name() }}</a>
+                    {% endfor %}
+                </div>
+            </li>
             {% endif %}
         </div>
         <div class="navbar-nav navbar-right">
