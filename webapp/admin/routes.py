@@ -29,15 +29,16 @@ def module_create():
     form = ModuleCreateForm()
     if form.validate_on_submit():
         module = Module(code=form.code.data, name=form.name.data, academic_year=form.academic_year.data, semester=form.semester.data)
-        db.session.add(module)
-        db.session.commit()
-        # create module directory if successfull
-        basedir = os.path.abspath(os.path.dirname(__name__))
-        module_path = os.path.join(basedir, 'webapp', 'luminus', 'modules', form.code.data, form.academic_year.data.replace('/', ''), str(form.semester.data), "plugins")
-        if not os.path.exists(module_path):
-            os.makedirs(module_path)
+        if module.check_exist(module) != module:
+            db.session.add(module)
+            db.session.commit()
+            # create module directory if successfull
+            basedir = os.path.abspath(os.path.dirname(__name__))
+            module_path = os.path.join(basedir, 'webapp', 'luminus', 'modules', form.code.data, form.academic_year.data.replace('/', ''), str(form.semester.data), "plugins")
+            if not os.path.exists(module_path):
+                os.makedirs(module_path)
 
-        flash("Successfully registered module.", "success")
+            flash("Successfully registered module.", "success")
     return render_template("admin_module_create.html", form=form)
 
 

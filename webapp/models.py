@@ -43,6 +43,9 @@ class Module(db.Model):
     tasks = db.relationship("Task", backref="module")
     exams = db.relationship("Exam", backref="module")
 
+    def check_exist(self, module):
+        return Module.query.filter_by(code=module.code, academic_year=module.academic_year, semester=module.semester).first()
+
     def __repr__(self):
         return f"<Module {self.id}>"
 
