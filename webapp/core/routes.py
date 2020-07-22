@@ -14,9 +14,3 @@ def index():
     # get all current tasks
     tasks = current_user.get_current_tasks()
     return render_template("core/index.html", announcements=announcements, tasks=tasks)
-
-
-@bp.route("/profile")
-@login_required
-def account():
-    return render_template("core/profile.html")
