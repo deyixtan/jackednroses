@@ -1,22 +1,22 @@
-from datetime import datetime
-from flask import render_template, request
+from flask import render_template
 from flask_login import current_user, login_required
 from webapp.core import bp
-from webapp.models import ModuleAnnouncement, ModuleTask, Module, User, Plugin, UHMSMessage
 
 
 @bp.route("/")
 @login_required
 def index():
+    # get announcements
     modules = current_user.get_current_modules()
     announcements = []
     for module in modules:
         announcements.extend(module.get_announcements())
+    # get all current tasks
     tasks = current_user.get_current_tasks()
-    return render_template("index.html", title="Homepage", announcements=announcements, tasks=tasks)
+    return render_template("core/index.html", announcements=announcements, tasks=tasks)
 
 
-@bp.route("/account")
+@bp.route("/profile")
 @login_required
 def account():
-    return render_template("account.html")
+    return render_template("core/profile.html")

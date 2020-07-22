@@ -1,9 +1,11 @@
 {% extends "base.html" %}
+{% block title %}Homepage{% endblock %}
 
 {% block app_content %}
     <div class="row">
         <!-- User Feed -->
         <div class="col-md-4 border">
+            <br>
             <!-- Pill controls -->
             <ul class="nav nav-pills border w-100">
                 <li class="nav-item"><a class="nav-link active" data-toggle="pill" href="#pills-announcements" role="tab">Announcements</a></li>
@@ -61,6 +63,7 @@
         </div>
         <!-- Calendar -->
         <div class="col-md-8 border">
+            <br>
             <div class="embed-responsive embed-responsive-1by1">
                 <iframe class="embed-responsive-item" src="{{ url_for('calendar.index') }}"></iframe>
             </div>
