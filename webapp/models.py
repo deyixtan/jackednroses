@@ -72,7 +72,7 @@ class UserProfile(db.Model):
     first_name = db.Column(db.String(32))
     last_name = db.Column(db.String(32))
     gender = db.Column(db.String(16))
-    birth_date = db.Column(db.DateTime)
+    birth_date = db.Column(db.Date)
     marital_status = db.Column(db.String(16))
     nationality = db.Column(db.String(32))
     mobile_number = db.Column(db.Integer)
