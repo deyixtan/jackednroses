@@ -5,27 +5,27 @@
 {% block app_content %}
     <div class="row">
         <div class="list-group w-100">
+            <!-- Tasks List -->
             {% for task in tasks %}            
-            <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="list-group-item list-group-item-action flex-column align-items-start">
+                <!-- Header -->
                 <div class="d-flex w-100 justify-content-between">
                     <h5 class="mb-1">{{ task.title }}</h5>
                     <small class="text-muted">{{ moment(task.timestamp).fromNow() }}</small>
                 </div>
-
+                <!-- Body -->
                 {% if task.location %}
                 <p class="mb-1 text-danger">Location: {{ task.location }}</p>
                 {% endif %}
-
                 {% if task.module_task_user[0].info %}
                 <p class="mb-1 text-danger">{{ task.module_task_user[0].info }}</p>
                 {% endif %}
-
                 {% for line in task.body.splitlines() %}
                 <p class="mb-1">{{ line }}</p>
                 {% endfor %}
-
+                <!-- Footer -->
                 <small class="text-muted">{{ task.module.code.upper() }}</small>
-            </a>
+            </div>
             {% endfor %}
         </div>
     </div>

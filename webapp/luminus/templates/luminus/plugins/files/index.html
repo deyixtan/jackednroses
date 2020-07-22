@@ -1,27 +1,37 @@
 {% extends "base.html" %}
-{% from "bootstrap/nav.html" import render_breadcrumb_item %}
 
 {% block navbar %}{% endblock %}
 
 {% block app_content %}
     <div class="row">
-        <nav aria-label="breadcrumb">
+        <nav class="w-100">
+            <!-- Breadcrumb nav -->
             <ol class="breadcrumb">
-            {% for breadcrumb in breadcrumbs %}
-                <li class="breadcrumb-item"><a href="{{ breadcrumb.path }}">{{ breadcrumb.name }}</a></li>
-            {% endfor %}
+                <!-- Breadcrumb item -->
+                {% for breadcrumb in breadcrumbs %}
+                <li class="breadcrumb-item">
+                    <a href="{{ breadcrumb.path }}">{{ breadcrumb.name.capitalize() }}</a>
+                </li>
+                {% endfor %}
             </ol>
         </nav>            
         <div class="list-group w-100">
+            <!-- Directories -->
             {% for dir in dirs %}
             <a href="{{ dir.path }}" class="list-group-item list-group-item-action">
-               {{ dir.name }}
+                <i class="fas fa-folder"></i> {{ dir.name.capitalize() }}
             </a>
             {% endfor %}
+            <!-- Files -->
             {% for file in files %}
-            <a href="{{ file.path }}" class="list-group-item list-group-item-action">
-                {{ file.name }}
-            </a>
+            <div class="list-group-item list-group-item-action">
+                <i class="fas fa-file"></i> {{ file.name }}
+                <span class="float-right">
+                    {% for info in file.info %}
+                    <a href="{{ info.path }}">{{ info.ext }}</a>
+                    {% endfor %}
+                </span>
+            </div>
             {% endfor %}
         </div>
     </div>

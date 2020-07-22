@@ -1,20 +1,25 @@
 {% extends "base.html" %}
+{% block title %}LumiNUS{% endblock %}
 
 {% block app_content %}
     <div class="row justify-content-md-center">
-        <div class="col-md-6">
-            <ul class="nav nav-tabs w-100" id="myTab" role="tablist">
+        <div class="col-md-6 border">
+            <!-- Module name -->
+            <h2 class="text-center">{{ module.get_formatted_name() }}</h2>
+            <!-- Tab controls -->
+            <ul class="nav nav-tabs w-100">
                 {% for plugin in plugins %}
                 <li class="nav-item">
-                    <a class="nav-link {% if loop.index == 1 %}active{% endif %}" id="{{ plugin.name }}-tab" data-toggle="tab" href="#{{ plugin.name }}" role="tab" aria-controls="{{ plugin.name }}" aria-selected="true">{{ plugin.name.capitalize() }}</a>
+                    <a class="nav-link {% if loop.index == 1 %}active{% endif %}" data-toggle="tab" href="#tab-{{ plugin.name }}">{{ plugin.name.capitalize() }}</a>
                 </li>
                 {% endfor %}
             </ul>
-            <div class="tab-content w-100" id="myTabContent">
+            <!-- Tab contents -->
+            <div class="tab-content w-100">
                 {% for plugin in plugins %}
-                <div class="tab-pane fade show {% if loop.index == 1 %}active{% endif %}" id="{{ plugin.name }}" role="tabpanel" aria-labelledby="{{ plugin.name }}-tab">
-                    <div class="embed-responsive embed-responsive-21by9">
-                        <iframe class="embed-responsive-item" src="{{ url_for('luminus.module_plugin_' + plugin.name, module_id=module_id) }}"></iframe>
+                <div class="tab-pane fade show {% if loop.index == 1 %}active{% endif %}" id="tab-{{ plugin.name }}">
+                    <div class="embed-responsive embed-responsive-1by1">
+                        <iframe class="embed-responsive-item" src="{{ url_for('luminus.module_plugin_' + plugin.name, module_id=module.id) }}"></iframe>
                     </div>
                 </div>
                 {% endfor %}
