@@ -1,1 +1,1 @@
-web: flask db upgrade: gunicorn webapp:run
+web: gunicorn jackednroses:run
