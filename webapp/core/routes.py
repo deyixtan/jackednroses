@@ -12,7 +12,7 @@ def index():
     announcements = []
     for module in modules:
         announcements.extend(module.get_announcements())
-    tasks = current_user.get_tasks()
+    tasks = current_user.get_current_tasks()
     return render_template("index.html", title="Homepage", announcements=announcements, tasks=tasks)
 
 

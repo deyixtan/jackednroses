@@ -60,6 +60,9 @@ class User(db.Model, UserMixin):
     def get_tasks(self):
         return self.tasks.order_by(ModuleTask.timestamp.asc()).all()
 
+    def get_current_tasks(self):
+        return self.tasks.filter(ModuleTask.timestamp > datetime.utcnow()).order_by(ModuleTask.timestamp.asc()).all()
+
 
 class UserProfile(db.Model):
     __tablename__ = "user_profile"
@@ -118,6 +121,9 @@ class Module(db.Model):
 
     def get_tasks(self):
         return self.tasks.order_by(ModuleTask.timestamp.asc()).all()
+
+    def get_current_tasks(self):
+        return self.tasks.filter(ModuleTask.timestamp > datetime.utcnow()).order_by(ModuleTask.timestamp.asc()).all()
 
     def enable_plugin(self, plugin):
         if not self.is_plugin_enabled(plugin):
