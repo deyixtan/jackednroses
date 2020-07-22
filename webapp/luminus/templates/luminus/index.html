@@ -7,7 +7,7 @@
             <!-- Module name -->
             <h2 class="text-center">{{ module.get_formatted_name() }}</h2>
             <!-- Tab controls -->
-            <ul class="nav nav-tabs w-100">
+            <ul class="nav nav-tabs border w-100">
                 {% for plugin in plugins %}
                 <li class="nav-item">
                     <a class="nav-link {% if loop.index == 1 %}active{% endif %}" data-toggle="tab" href="#tab-{{ plugin.name }}">{{ plugin.name.capitalize() }}</a>
