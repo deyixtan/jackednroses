@@ -1,33 +1,33 @@
-import json
-from flask import render_template, request
+from flask import jsonify, render_template
 from flask_login import current_user, login_required
 from webapp.calendar import bp
-from webapp.models import ModuleAnnouncement, ModuleTask, Module, User, Plugin, UHMSMessage
 
 
 @bp.route("/")
 @login_required
 def index():
-    return render_template("calendar_index.html")
-
-
-# helper function
-def create_event(title, timestamp):
-    return {
-        "title": title,
-        "start": timestamp.strftime("%Y-%m-%d")
-    }
+    return render_template("calendar/index.html")
 
 
 @bp.route("/data")
 @login_required
 def return_data():
     events = []
-    tasks = current_user.tasks.all()
+    # get all tasks of user
+    tasks = current_user.get_tasks()
     for task in tasks:
-        code = task.module.code
+        code = task.module.code.upper()
         title = task.title
-        timestamp = task.timestamp
-        event = create_event(f"{code}: {title}", timestamp)
+        # create event
+        event_title = f"{code}: {title}"
+        event_start = task.start_timestamp
+        event_end = task.end_timestamp
+        event = {
+            "title": event_title,
+            "start": event_start,
+            "end": event_end
+        }
+        # add event to list
         events.append(event)
-    return json.dumps(events)
+    # return events list as json response
+    return jsonify(events)

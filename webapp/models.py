@@ -58,10 +58,10 @@ class User(db.Model, UserMixin):
         ).all()
 
     def get_tasks(self):
-        return self.tasks.order_by(ModuleTask.timestamp.asc()).all()
+        return self.tasks.order_by(ModuleTask.start_timestamp.asc()).all()
 
     def get_current_tasks(self):
-        return self.tasks.filter(ModuleTask.timestamp > datetime.utcnow()).order_by(ModuleTask.timestamp.asc()).all()
+        return self.tasks.filter(ModuleTask.end_timestamp > datetime.utcnow()).order_by(ModuleTask.start_timestamp.asc()).all()
 
 
 class UserProfile(db.Model):
@@ -120,10 +120,10 @@ class Module(db.Model):
         return self.announcements.order_by(ModuleAnnouncement.timestamp.desc()).all()
 
     def get_tasks(self):
-        return self.tasks.order_by(ModuleTask.timestamp.asc()).all()
+        return self.tasks.order_by(ModuleTask.start_timestamp.asc()).all()
 
     def get_current_tasks(self):
-        return self.tasks.filter(ModuleTask.timestamp > datetime.utcnow()).order_by(ModuleTask.timestamp.asc()).all()
+        return self.tasks.filter(ModuleTask.end_timestamp > datetime.utcnow()).order_by(ModuleTask.start_timestamp.asc()).all()
 
     def enable_plugin(self, plugin):
         if not self.is_plugin_enabled(plugin):
@@ -157,7 +157,8 @@ class ModuleTask(db.Model):
     module_id = db.Column(db.Integer, db.ForeignKey("module.id"))
     title = db.Column(db.String(32))
     body = db.Column(db.String(1024))
-    timestamp = db.Column(db.DateTime)
+    start_timestamp = db.Column(db.DateTime)
+    end_timestamp = db.Column(db.DateTime)
     location = db.Column(db.String(32))
     users = db.relationship(
         "User", secondary=ModuleTaskUserMap.__table__,
