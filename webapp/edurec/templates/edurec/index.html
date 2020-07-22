@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+
+{% block app_content %}
+    <div class="row justify-content-md-center">
+        <div class="col-md-5">
+            <br>
+            <!-- Demographic Information Card -->
+            <div class="card">
+                <h5 class="card-header text-center">Demographic Information</h5>
+                <div class="card-body">
+                    <table class="table table-hover table-bordered">
+                        <tbody>
+                            <tr>
+                                <td class="text-right">Username</td>
+                                <td class="text-left">{{ current_user.username.upper() }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-right">Email</td>
+                                <td class="text-left">{{ current_user.email }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-right">Offical Name</td>
+                                <td class="text-left">{{ current_user.profile.get_full_name().upper() }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-right">Gender</td>
+                                <td class="text-left">{{ current_user.profile.gender.capitalize() }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-right">Date of Birth</td>
+                                <td class="text-left">{{ moment(current_user.profile.birth_date).format("DD/MM/YYYY") }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-right">Marital Status</td>
+                                <td class="text-left">{{ current_user.profile.marital_status.capitalize() }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-right">Mobile Number</td>
+                                <td class="text-left">{{ current_user.profile.mobile_number }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-right">Home Number</td>
+                                <td class="text-left">{{ current_user.profile.home_number }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-right">Home Address</td>
+                                <td rowspan="3" class="text-left">{{ current_user.profile.home_address.replace("\n", ", ") }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <br>
+            <!-- Nationality & Citizenship -->
+            <div class="card">
+                <h5 class="card-header text-center">Nationality and Citizenship</h5>
+                <div class="card-body">
+                    <table class="table table-hover table-bordered">
+                        <tbody>
+                            <tr>
+                                <td class="text-right">Nationality</td>
+                                <td class="text-left">{{ current_user.profile.nationality.capitalize() }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-right">National ID</td>
+                                <td class="text-left">{{ current_user.profile.nric.upper() }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <br>
+            <!-- Emergency Contact -->
+            <div class="card">
+                <h5 class="card-header text-center">Emergency Contact</h5>
+                <div class="card-body">
+                    <table class="table table-hover table-bordered">
+                        <tbody>
+                            <tr>
+                                <td class="text-right">Name</td>
+                                <td class="text-left">{{ current_user.profile.emergency_contact_name }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-right">Number</td>
+                                <td class="text-left">{{ current_user.profile.emergency_contact_number }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <br>
+            <!-- Edit Information -->
+            <div class="card">
+                <h5 class="card-header text-center">Edit Information</h5>
+                <div class="card-body text-center">
+                    <a href="{{ url_for('edurec.update') }}" class="btn btn-danger align-items-start">Edit Profile</a>
+                </div>
+            </div>
+            <br><br>
+        </div>
+    </div>
+{% endblock %}

@@ -1,32 +1,15 @@
 from flask_wtf import FlaskForm
-from webapp.models import ModuleAnnouncement, ModuleTask, Module, User, Plugin, UHMSMessage
-from wtforms import IntegerField, PasswordField, StringField, SubmitField, TextAreaField, ValidationError
-from wtforms.fields.html5 import DateField
-from wtforms.validators import DataRequired, EqualTo
+from wtforms import IntegerField, StringField, SubmitField, TextAreaField
+from wtforms.validators import DataRequired
 
 
-class UserDetailsCreateForm(FlaskForm):
-    nric = StringField("NRIC", validators=[DataRequired()])
-    gender = StringField("Gender", validators=[DataRequired()])
-    dob = DateField("Date", format="%Y-%m-%d", validators=[DataRequired()])
-    marital_status = StringField("Marital Status", validators=[DataRequired()])
+class EditProfileForm(FlaskForm):
     nationality = StringField("Nationality", validators=[DataRequired()])
-    mobilenum = IntegerField("Mobile Number", validators=[DataRequired()])
-    homenum = IntegerField("Home Number", validators=[DataRequired()])
-    address = TextAreaField("Address", render_kw={"rows": 4}, validators=[DataRequired()])
-    emergencycontactname = StringField("Emergency Contact Name", validators=[DataRequired()])
-    emergencycontactnum = IntegerField("Emergency Contact Number", validators=[DataRequired()])
-    submit = SubmitField("Update Information")
-
-    def validate(self):
-        rv = FlaskForm.validate(self)
-        if not rv:
-            return False
-        mobnum = len(str(self.mobilenum.data))
-        homenum = len(str(self.homenum.data))
-        emnum = len(str(self.emergencycontactnum.data))
-        if mobnum != 8 or homenum != 8 or emnum != 8:
-            self.nric.errors.append("Phone numbers should be Singapore numbers only")
-        if len(self.errors) == 0:
-            return True
-        return False
+    nric = StringField("NRIC", validators=[DataRequired()])
+    marital_status = StringField("Marital Status", validators=[DataRequired()])
+    mobile_number = IntegerField("Mobile Number", validators=[DataRequired()])
+    home_number = IntegerField("Home Number", validators=[DataRequired()])
+    home_address = TextAreaField("Home Address", render_kw={"rows": 4}, validators=[DataRequired()])
+    emergency_contact_name = StringField("Emergency Contact Name", validators=[DataRequired()])
+    emergency_contact_number = IntegerField("Emergency Contact Number", validators=[DataRequired()])
+    submit = SubmitField("Update Profile")
