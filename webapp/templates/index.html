@@ -2,51 +2,56 @@
 
 {% block app_content %}
     <div class="row">
+        <!-- User Feed -->
         <div class="col-md-4 border">
-            <ul class="nav nav-pills mb-3 border" id="pills-tab" role="tablist">
-                <li class="nav-item"><a class="nav-link active" id="pills-announcements-tab" data-toggle="pill" href="#pills-announcements" role="tab" aria-controls="pills-home" aria-selected="true">Announcements</a></li>
-                <li class="nav-item"><a class="nav-link" id="pills-tasks-tab" data-toggle="pill" href="#pills-tasks" role="tab" aria-controls="pills-tasks" aria-selected="false">Tasks</a></li>
+            <!-- Pill controls -->
+            <ul class="nav nav-pills border w-100">
+                <li class="nav-item"><a class="nav-link active" data-toggle="pill" href="#pills-announcements" role="tab">Announcements</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="pill" href="#pills-tasks" role="tab">Tasks</a></li>
             </ul>
-
-            <div class="tab-content" id="pills-tabContent">
-                <div class="tab-pane fade show active" id="pills-announcements" role="tabpanel" aria-labelledby="pills-announcement-tab">
+            <!-- Pill contents -->
+            <div class="tab-content w-100">
+                <!-- Announcements -->
+                <div class="tab-pane fade show active" id="pills-announcements">
                     <div class="list-group">
                         {% for announcement in announcements %}                   
-                        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                        <div class="list-group-item list-group-item-action flex-column align-items-start">
+                            <!-- Title -->
                             <div class="d-flex w-100 justify-content-between">
                                 <h5 class="mb-1">{{ announcement.title }}</h5>
                                 <small class="text-muted">{{ moment(announcement.timestamp).fromNow() }}</small>
                             </div>
+                            <!-- Body -->
                             {% for line in announcement.body.splitlines() %}
                             <p class="mb-1">{{ line }}</p>
                             {% endfor %}
+                            <!-- Footer -->
                             <small class="text-muted">{{ announcement.module.code.upper() }}</small>
-                        </a>
+                        </div>
                         {% endfor %}
                     </div>
                 </div>
-
-                <div class="tab-pane fade" id="pills-tasks" role="tabpanel" aria-labelledby="pills-tasks-tab">
+                <!-- Tasks -->
+                <div class="tab-pane fade" id="pills-tasks">
                     <div class="list-group">
                         {% for task in tasks %}            
                         <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                            <!-- Title -->
                             <div class="d-flex w-100 justify-content-between">
                                 <h5 class="mb-1">{{ task.title }}</h5>
                                 <small class="text-muted">{{ moment(task.timestamp).fromNow() }}</small>
                             </div>
-
+                            <!-- Body -->
                             {% if task.location %}
                             <p class="mb-1 text-danger">Location: {{ task.location }}</p>
                             {% endif %}
-
                             {% if task.module_task_user[0].info %}
                             <p class="mb-1 text-danger">{{ task.module_task_user[0].info }}</p>
                             {% endif %}
-
                             {% for line in task.body.splitlines() %}
                             <p class="mb-1">{{ line }}</p>
                             {% endfor %}
-
+                            <!-- Footer -->
                             <small class="text-muted">{{ task.module.code.upper() }}</small>
                         </a>
                         {% endfor %}
@@ -54,8 +59,8 @@
                 </div>
             </div>
         </div>
-        <hr>
-        <div class="col-md-8">
+        <!-- Calendar -->
+        <div class="col-md-8 border">
             <div class="embed-responsive embed-responsive-1by1">
                 <iframe class="embed-responsive-item" src="{{ url_for('calendar.index') }}"></iframe>
             </div>
