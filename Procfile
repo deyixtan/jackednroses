@@ -1,1 +1,1 @@
-web: gunicorn jackednroses:run
+web: gunicorn run:app
