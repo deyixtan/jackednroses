@@ -50,6 +50,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(128), index=True, unique=True)
     password_hash = db.Column(db.String(128))
+    is_admin = db.Column(db.Boolean, default=False)
     profile = db.relationship("UserProfile", backref="user", uselist=False, lazy=True)
 
     def __repr__(self):
@@ -72,6 +73,9 @@ class User(db.Model, UserMixin):
 
     def get_current_tasks(self):
         return self.tasks.filter(ModuleTask.end_timestamp > datetime.utcnow()).order_by(ModuleTask.start_timestamp.asc()).all()
+
+    def get_current_module_tasks(self, module_id):
+        return self.tasks.filter(and_(ModuleTask.end_timestamp > datetime.utcnow(), ModuleTask.module_id == module_id)).order_by(ModuleTask.start_timestamp.asc()).all()
 
     def get_current_hostel_room(self):
         return self.hostel_rooms.filter(and_(
@@ -138,6 +142,14 @@ class Module(db.Model):
     def get_formatted_name(self):
         return f"[{self.code.upper()}] {self.name}"
 
+    def get_formatted_ay(self):
+        first_part = str(self.academic_year)[-2:]
+        second_part = str(self.academic_year + 1)[-2:]
+        return f"AY{first_part}{second_part} Semester {self.semester}"
+
+    def get_full_formatted(self):
+        return f"{self.get_formatted_name()} ({self.get_formatted_ay()})"
+
     def get_announcements(self):
         return self.announcements.order_by(ModuleAnnouncement.timestamp.desc()).all()
 
@@ -203,7 +215,7 @@ class Plugin(db.Model):
 class Hostel(db.Model):
     __tablename_ = "hostel"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(128))
+    name = db.Column(db.String(128), unique=True)
     type = db.Column(db.String(64))
     rooms = db.relationship("HostelRoom", backref="hostel", lazy="dynamic")
     messages = db.relationship("HostelMessage", backref="hostel", lazy="dynamic")

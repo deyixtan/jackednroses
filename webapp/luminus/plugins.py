@@ -25,7 +25,7 @@ def module_plugin_tasks(module_id):
     if module not in current_user.get_current_modules():
         abort(404)
     # get all tasks
-    tasks = module.get_current_tasks()
+    tasks = current_user.get_current_module_tasks(module.id)
     return render_template("luminus/plugins/tasks/index.html", tasks=tasks)
 
 

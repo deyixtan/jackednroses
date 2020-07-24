@@ -17,7 +17,7 @@
                 {% if task.location %}
                 <p class="mb-1 text-danger">Location: {{ task.location }}</p>
                 {% endif %}
-                {% if task.module_task_user[0].info %}
+                {% if task.module_task_user[0] %}
                 <p class="mb-1 text-danger">{{ task.module_task_user[0].info }}</p>
                 {% endif %}
                 {% for line in task.body.splitlines() %}
