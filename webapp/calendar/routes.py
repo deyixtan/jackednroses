@@ -1,41 +1,33 @@
-import json
-from flask import render_template, request
+from flask import jsonify, render_template
 from flask_login import current_user, login_required
 from webapp.calendar import bp
-from webapp.models import Enrolled, Module, User, Announcement, Task, Exam
 
 
 @bp.route("/")
 @login_required
 def index():
-    return render_template("calendar_index.html")
-
-
-# helper function
-def create_event(title, timestamp):
-    return {
-        "title": title,
-        "start": timestamp.strftime("%Y-%m-%d")
-    }
+    return render_template("calendar/index.html")
 
 
 @bp.route("/data")
 @login_required
 def return_data():
-    user = User.query.filter_by(id=current_user.get_id()).first()
-    enrolled = Enrolled.query.filter_by(user=user).all()
-    task_exam_list = []
-    events_list = []
-    for enrol_entry in enrolled:
-        mod = Module.query.get(enrol_entry.module_id)
-        task_exam_list.extend(mod.tasks)
-        task_exam_list.extend(mod.exams)
-
-    for task_exam in task_exam_list:
-        code = Module.query.get(task_exam.module_id).code
-        if isinstance(task_exam, Task):
-            events_list.append(create_event(f"{code}: {task_exam.taskname}", task_exam.timestamp))
-        elif isinstance(task_exam, Exam):
-            events_list.append(create_event(f"{code}: {task_exam.examname}", task_exam.timestamp))
-
-    return json.dumps(events_list)
+    events = []
+    # get all tasks of user
+    tasks = current_user.get_tasks()
+    for task in tasks:
+        code = task.module.code.upper()
+        title = task.title
+        # create event
+        event_title = f"{code}: {title}"
+        event_start = task.start_timestamp
+        event_end = task.end_timestamp
+        event = {
+            "title": event_title,
+            "start": event_start,
+            "end": event_end
+        }
+        # add event to list
+        events.append(event)
+    # return events list as json response
+    return jsonify(events)

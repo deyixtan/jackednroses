@@ -1,7 +1,9 @@
 from datetime import datetime
+from sqlalchemy import and_, or_
+from flask import current_app
 from flask_login import UserMixin
-from webapp import db, login_manager
 from werkzeug.security import check_password_hash, generate_password_hash
+from webapp import db, login_manager
 
 
 @login_manager.user_loader
@@ -9,17 +11,50 @@ def load_user(user_id):
     return User.query.get(user_id)
 
 
+# Association Tables
+class ModuleUserMap(db.Model):
+    __tablename__ = "module_user_map"
+    module_id = db.Column(db.Integer, db.ForeignKey("module.id"), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
+
+
+class ModulePluginMap(db.Model):
+    __tablename__ = "module_plugin_map"
+    module_id = db.Column(db.Integer, db.ForeignKey("module.id"), primary_key=True)
+    plugin_id = db.Column(db.Integer, db.ForeignKey("plugin.id"), primary_key=True)
+
+
+class ModuleTaskUserMap(db.Model):
+    __tablename__ = "module_task_user_map"
+    task_id = db.Column(db.Integer, db.ForeignKey("module_task.id"), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
+    info = db.Column(db.String(1024))
+    user = db.relationship("User", backref="module_task_user")
+    module_tasks = db.relationship("ModuleTask", backref="module_task_user")
+
+
+class HostelRoomUserMap(db.Model):
+    __tablename__ = "hostel_room_user_map"
+    hostel_room_id = db.Column(db.Integer, db.ForeignKey("hostel_room.id"), primary_key=True)
+    academic_year = db.Column(db.Integer, primary_key=True)
+    semester = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    user = db.relationship("User", backref="hostel_room_user")
+    hostel_room = db.relationship("HostelRoom", backref="hostel_room_user")
+
+
+# Object Tables
 class User(db.Model, UserMixin):
-    __tablename__ = "users"
+    __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64))
-    nusnetid = db.Column(db.String(64), unique=True, index=True)
+    username = db.Column(db.String(64), index=True, unique=True)
+    email = db.Column(db.String(128), index=True, unique=True)
     password_hash = db.Column(db.String(128))
-    email = db.Column(db.String(64), unique=True, index=True)
-    profile_img = db.Column(db.String(20), nullable=False, default="default_profile.png")
-    enrolled = db.relationship('Enrolled', backref='user')
-    examdetails = db.relationship('ExamDetails', backref='user')
-    userdetails = db.relationship('UserDetails', backref='user')
+    is_admin = db.Column(db.Boolean, default=False)
+    profile = db.relationship("UserProfile", backref="user", uselist=False, lazy=True)
+
+    def __repr__(self):
+        return f"<User {self.username}>"
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -27,127 +62,214 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    def get_current_modules(self):
+        return self.modules.filter(and_(
+            Module.academic_year == current_app.config["CURRENT_ACADEMIC_YEAR"],
+            Module.semester == current_app.config["CURRENT_SEMESTER"]
+        )).all()
+
+    def get_tasks(self):
+        return self.tasks.order_by(ModuleTask.start_timestamp.asc()).all()
+
+    def get_current_tasks(self):
+        return self.tasks.filter(ModuleTask.end_timestamp > datetime.utcnow()).order_by(ModuleTask.start_timestamp.asc()).all()
+
+    def get_current_module_tasks(self, module_id):
+        return self.tasks.filter(and_(ModuleTask.end_timestamp > datetime.utcnow(), ModuleTask.module_id == module_id)).order_by(ModuleTask.start_timestamp.asc()).all()
+
+    def get_current_hostel_room(self):
+        return self.hostel_rooms.filter(and_(
+            HostelRoomUserMap.academic_year == current_app.config["CURRENT_ACADEMIC_YEAR"],
+            HostelRoomUserMap.semester == current_app.config["CURRENT_SEMESTER"]
+        )).first()
+
+    def get_past_hostel_rooms(self):
+        return db.session.query(Hostel, HostelRoom, HostelRoomUserMap).select_from(HostelRoomUserMap).join(User).join(HostelRoom).join(Hostel).filter(User.id == self.id).filter(or_(
+            HostelRoomUserMap.academic_year != current_app.config["CURRENT_ACADEMIC_YEAR"],
+            HostelRoomUserMap.semester != current_app.config["CURRENT_SEMESTER"]
+        )).all()
+
+
+class UserProfile(db.Model):
+    __tablename__ = "user_profile"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    nric = db.Column(db.String(16), index=True, unique=True)
+    first_name = db.Column(db.String(32))
+    last_name = db.Column(db.String(32))
+    gender = db.Column(db.String(16))
+    birth_date = db.Column(db.Date)
+    marital_status = db.Column(db.String(16))
+    nationality = db.Column(db.String(32))
+    mobile_number = db.Column(db.Integer)
+    home_number = db.Column(db.Integer)
+    home_address = db.Column(db.String(128))
+    emergency_contact_name = db.Column(db.String(64))
+    emergency_contact_number = db.Column(db.Integer)
+
     def __repr__(self):
-        return f"<User {self.id}>"
+        return f"<UserProfile {self.get_full_name()}>"
+
+    def get_full_name(self):
+        return f"{self.first_name} {self.last_name}"
 
 
 class Module(db.Model):
-    __tablename__ = "modules"
+    __tablename__ = "module"
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(64), index=True)
     name = db.Column(db.String(64))
-    academic_year = db.Column(db.String(9))
-    semester = db.Column(db.Integer())
-    enrolled = db.relationship("Enrolled", backref="module")
-    announcements = db.relationship("Announcement", backref="module")
-    tasks = db.relationship("Task", backref="module")
-    exams = db.relationship("Exam", backref="module")
+    academic_year = db.Column(db.Integer)
+    semester = db.Column(db.Integer)
+    announcements = db.relationship("ModuleAnnouncement", backref="module", lazy="dynamic")
+    tasks = db.relationship("ModuleTask", backref="module", lazy="dynamic")
+    plugins = db.relationship(
+        "Plugin", secondary=ModulePluginMap.__table__,
+        primaryjoin="ModulePluginMap.module_id == Module.id",
+        secondaryjoin="ModulePluginMap.plugin_id == Plugin.id",
+        backref=db.backref("modules", lazy="dynamic"), lazy="dynamic"
+    )
+    users = db.relationship(
+        "User", secondary=ModuleUserMap.__table__,
+        primaryjoin="ModuleUserMap.module_id == Module.id",
+        secondaryjoin="ModuleUserMap.user_id == User.id",
+        backref=db.backref("modules", lazy="dynamic"), lazy="dynamic"
+    )
 
     def check_exist(self, module):
         return Module.query.filter_by(code=module.code, academic_year=module.academic_year, semester=module.semester).first()
 
     def __repr__(self):
-        return f"<Module {self.id}>"
+        return f"<Module {self.code}>"
+
+    def get_formatted_name(self):
+        return f"[{self.code.upper()}] {self.name}"
+
+    def get_formatted_ay(self):
+        first_part = str(self.academic_year)[-2:]
+        second_part = str(self.academic_year + 1)[-2:]
+        return f"AY{first_part}{second_part} Semester {self.semester}"
+
+    def get_full_formatted(self):
+        return f"{self.get_formatted_name()} ({self.get_formatted_ay()})"
+
+    def get_announcements(self):
+        return self.announcements.order_by(ModuleAnnouncement.timestamp.desc()).all()
+
+    def get_tasks(self):
+        return self.tasks.order_by(ModuleTask.start_timestamp.asc()).all()
+
+    def get_current_tasks(self):
+        return self.tasks.filter(ModuleTask.end_timestamp > datetime.utcnow()).order_by(ModuleTask.start_timestamp.asc()).all()
+
+    def enable_plugin(self, plugin):
+        if not self.is_plugin_enabled(plugin):
+            self.plugins.append(plugin)
+            db.session.commit()
+
+    def disable_plugin(self, plugin):
+        if self.is_plugin_enabled(plugin):
+            self.plugins.remove(plugin)
+            db.session.commit()
+
+    def is_plugin_enabled(self, plugin):
+        return self.plugins.filter(ModulePluginMap.plugin_id == plugin.id).count() > 0
 
 
-class Enrolled(db.Model):
-    __tablename__ = "enrolled"
-    # id = db.Column(db.Integer, primary_key=True)
-    nusnetid = db.Column(db.String(64), db.ForeignKey('users.nusnetid'), primary_key=True)
-    module_id = db.Column(db.Integer, db.ForeignKey('modules.id'), primary_key=True)
-
-    def set_module(self, code, academic_year, semester):
-        self.module_id = Module.query.filter_by(code=code, academic_year=academic_year, semester=semester).first().id
-
-    def __repr__(self):
-        return f"<Module {self.module_id}, {self.nusnetid}>"
-
-
-class Announcement(db.Model):
-    __tablename__ = "announcements"
+class ModuleAnnouncement(db.Model):
+    __tablename__ = "module_announcement"
     id = db.Column(db.Integer, primary_key=True)
-    module_id = db.Column(db.Integer, db.ForeignKey('modules.id'))
-    date = db.Column(db.DateTime, default=datetime.utcnow)
+    module_id = db.Column(db.Integer, db.ForeignKey("module.id"))
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     title = db.Column(db.String(32))
     body = db.Column(db.String(1024))
 
-    def set_module(self, code, academic_year, semester):
-        self.module_id = Module.query.filter_by(code=code, academic_year=academic_year, semester=semester).first().id
-
     def __repr__(self):
-        return f"<Announcement {self.id}, {self.module_id}, {self.title}, {self.date}"
+        return f"<ModuleAnnouncement {self.title}>"
 
 
-class Task(db.Model):
-    __tablename__ = "tasks"
+class ModuleTask(db.Model):
+    __tablename__ = "module_task"
     id = db.Column(db.Integer, primary_key=True)
-    module_id = db.Column(db.Integer, db.ForeignKey('modules.id'))
-    taskname = db.Column(db.String(32))
-    taskinfo = db.Column(db.String(1024))
-    timestamp = db.Column(db.DateTime)
-
-    def set_module(self, code, academic_year, semester):
-        self.module_id = Module.query.filter_by(code=code, academic_year=academic_year, semester=semester).first().id
-
-    def __repr__(self):
-        return f"<Task {self.id}, {self.module_id}, {self.taskname}, {self.timestamp}"
-
-
-class Exam(db.Model):
-    __tablename__ = "exams"
-    id = db.Column(db.Integer, primary_key=True)
-    module_id = db.Column(db.Integer, db.ForeignKey('modules.id'))
-    examname = db.Column(db.String(32))
-    examinfo = db.Column(db.String(1024))
+    module_id = db.Column(db.Integer, db.ForeignKey("module.id"))
+    title = db.Column(db.String(32))
+    body = db.Column(db.String(1024))
+    start_timestamp = db.Column(db.DateTime)
+    end_timestamp = db.Column(db.DateTime)
     location = db.Column(db.String(32))
-    timestamp = db.Column(db.DateTime)
-    examdetails = db.relationship("ExamDetails", backref="exam")
-
-    def set_module(self, code, academic_year, semester):
-        self.module_id = Module.query.filter_by(code=code, academic_year=academic_year, semester=semester).first().id
-
-    def __repr__(self):
-        return f"<Exam {self.id}, {self.module_id}, {self.examname}, {self.timestamp}>"
-
-
-class ExamDetails(db.Model):
-    __tablename__ = "examdetails"
-    nusnetid = db.Column(db.String(64), db.ForeignKey('users.nusnetid'), primary_key=True)
-    exam_id = db.Column(db.Integer, db.ForeignKey('exams.id'), primary_key=True)
-    seatnum = db.Column(db.Integer)
-
-    def set_exam(self, code, academic_year, semester):
-        module_id = Module.query.filter_by(code=code, academic_year=academic_year, semester=semester).first().id
-        self.exam_id = Exam.query.filter_by(module_id=module_id).first().id
+    users = db.relationship(
+        "User", secondary=ModuleTaskUserMap.__table__,
+        backref=db.backref("tasks", lazy="dynamic"), lazy="dynamic"
+    )
 
     def __repr__(self):
-        return f"<Exam Details {self.nusnetid}, {self.exam_id}, {self.seatnum}>"
+        return f"<ModuleTask {self.title}>"
 
 
-class UserDetails(db.Model):
-    __tablename__ = 'userdetails'
-    nusnetid = db.Column(db.String(64), db.ForeignKey('users.nusnetid'), primary_key=True)
-    nric = db.Column(db.String(9), unique=True, index=True)
-    gender = db.Column(db.String(16))
-    dob = db.Column(db.DateTime)
-    marital_status = db.Column(db.String(16))
-    nationality = db.Column(db.String(32))
-    mobilenum = db.Column(db.Integer)
-    homenum = db.Column(db.Integer)
-    address = db.Column(db.String(128))
-    emergencycontactname = db.Column(db.String(64))
-    emergencycontactnum = db.Column(db.Integer)
-
-    def __repr__(self):
-        return f"<User {self.nric}, {self.mobilenum}>"
-
-
-class UhmsMessages(db.Model):
-    __tablename__ = "uhmsmessages"
+class Plugin(db.Model):
+    __tablename__ = "plugin"
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DateTime, default=datetime.utcnow)
+    name = db.Column(db.String(32))
+
+    def __repr__(self):
+        return f"<Plugin {self.name}>"
+
+
+class Hostel(db.Model):
+    __tablename_ = "hostel"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(128), unique=True)
+    type = db.Column(db.String(64))
+    rooms = db.relationship("HostelRoom", backref="hostel", lazy="dynamic")
+    messages = db.relationship("HostelMessage", backref="hostel", lazy="dynamic")
+
+    def __repr__(self):
+        return f"<Hostel {self.name}>"
+
+
+class HostelRoom(db.Model):
+    __tablename = "hostel_room"
+    id = db.Column(db.Integer, primary_key=True)
+    hostel_id = db.Column(db.Integer, db.ForeignKey("hostel.id"))
+    block = db.Column(db.String(32))
+    level = db.Column(db.String(32))
+    room = db.Column(db.String(32))
+    users = db.relationship(
+        "User", secondary=HostelRoomUserMap.__table__,
+        backref=db.backref("hostel_rooms", lazy="dynamic"), lazy="dynamic"
+    )
+
+    def __repr__(self):
+        return f"<HostelRoom {self.get_formatted_location()}>"
+
+    def get_formatted_location(self):
+        return f"{self.block}-{self.level}-{self.room}"
+
+    def is_currently_available(self):
+        return HostelRoomUserMap.query.filter(and_(
+            HostelRoomUserMap.hostel_room_id == self.id,
+            HostelRoomUserMap.academic_year == current_app.config["CURRENT_ACADEMIC_YEAR"],
+            HostelRoomUserMap.semester == current_app.config["CURRENT_SEMESTER"]
+        )).count() == 0
+
+
+class HostelApplication(db.Model):
+    __tablename_ = "hostel_application"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    hostel_id = db.Column(db.Integer, db.ForeignKey("hostel.id"))
+
+    def __repr__(self):
+        return f"<HostelApplication {self.id}>"
+
+
+class HostelMessage(db.Model):
+    __tablename_ = "hostel_message"
+    id = db.Column(db.Integer, primary_key=True)
+    hostel_id = db.Column(db.Integer, db.ForeignKey("hostel.id"))
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     title = db.Column(db.String(32))
     body = db.Column(db.String(1024))
 
     def __repr__(self):
-        return f"<Message {self.id}, {self.module_id}, {self.title}, {self.date}"
+        return f"<HostelMessage {self.title}>"

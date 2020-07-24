@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block navbar %}{% endblock %}
+
+{% block app_content %}
+    <div class="row">
+        <div class="list-group w-100">
+            <!-- Announcements List -->
+            {% for announcement in announcements %}                   
+            <div class="list-group-item list-group-item-action flex-column align-items-start">
+                <!-- Header -->
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ announcement.title }}</h5>
+                    <small class="text-muted">{{ moment(announcement.timestamp).fromNow() }}</small>
+                </div>
+                <!-- Body -->
+                {% for line in announcement.body.splitlines() %}
+                <p class="mb-1">{{ line }}</p>
+                {% endfor %}
+                <!-- Footer -->
+                <small class="text-muted">{{ announcement.module.code.upper() }}</small>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

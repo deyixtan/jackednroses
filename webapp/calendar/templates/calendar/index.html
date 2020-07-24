@@ -1,0 +1,20 @@
+{% extends "bootstrap/base.html" %}
+
+{% block styles %}
+    <link href="{{ url_for('calendar.static', filename='fullcalendar.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('calendar.static', filename='calendar.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+	<div id="script-warning">Error getting data from <code>/data</code> endpoint.</div>
+	<div id="loading">loading...</div>
+	<div id="calendar"></div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('calendar.static', filename='calendar_lib/moment.min.js') }}"></script>
+    <script src="{{ url_for('calendar.static', filename='calendar_lib/jquery.min.js') }}"></script>
+    <script src="{{ url_for('calendar.static', filename='fullcalendar.min.js') }}"></script>
+    <script src="{{ url_for('calendar.static', filename='calendar.js') }}"></script>
+{% endblock %}

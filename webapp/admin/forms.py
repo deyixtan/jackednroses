@@ -1,157 +1,123 @@
 from flask_wtf import FlaskForm
-from webapp.models import Announcement, Enrolled, Exam, ExamDetails, Module, Task, User, UhmsMessages
-from wtforms import IntegerField, PasswordField, StringField, SubmitField, TextAreaField, ValidationError
-from wtforms.fields.html5 import DateTimeLocalField
-from wtforms.validators import DataRequired, Email, EqualTo
+from webapp.models import ModuleAnnouncement, ModuleTask, Module, User, UserProfile, Plugin
+from wtforms import BooleanField, IntegerField, MultipleFileField, PasswordField, RadioField, SelectField, StringField, SubmitField, TextAreaField, ValidationError
+from wtforms.fields.html5 import DateTimeLocalField, DateField
+from wtforms.validators import DataRequired, Email, EqualTo, InputRequired
+from datetime import datetime
 
 
-class ModuleAnnouncementCreateForm(FlaskForm):
-    code = StringField("Code", validators=[DataRequired()])
-    academic_year = StringField("Academic Year", render_kw={"placeholder": "eg. 2019/2020"}, validators=[DataRequired()])
-    semester = IntegerField("Semester", validators=[DataRequired()])
-    title = StringField("Title", validators=[DataRequired()])
-    body = TextAreaField("Body", render_kw={"rows": 10}, validators=[DataRequired()])
-    submit = SubmitField("Publish Announcement")
-
-    def validate(self):
-        rv = FlaskForm.validate(self)
-        if not rv:
-            return False
-        mod = Module.query.filter_by(code=self.code.data, academic_year=self.academic_year.data, semester=self.semester.data).first()
-        if not mod:
-            self.code.errors.append("Module, Academic Year and/or semester does not exit!")
-        if len(self.errors) == 0:
-            return True
-        return False
-
-
-class ModuleCreateForm(FlaskForm):
-    code = StringField("Code", validators=[DataRequired()])
-    name = StringField("Name", validators=[DataRequired()])
-    academic_year = StringField("Academic Year", render_kw={"placeholder": "eg. 2019/2020"}, validators=[DataRequired()])
-    semester = IntegerField("Semester", validators=[DataRequired()])
-    submit = SubmitField("Register")
-
-    def validate(self):
-        rv = FlaskForm.validate(self)
-        if not rv:
-            return False
-        mod = Module.query.filter_by(code=self.code.data, academic_year=self.academic_year.data, semester=self.semester.data).first()
-        if mod:
-            self.code.errors.append("Module, academic year and/or semester has already been registered!")
-        if len(self.errors) == 0:
-            return True
-        return False
-
-
-class ModuleExamCreateForm(FlaskForm):
-    code = StringField("Code", validators=[DataRequired()])
-    academic_year = StringField("Academic Year", render_kw={"placeholder": "eg. 2019/2020"}, validators=[DataRequired()])
-    semester = IntegerField("Semester", validators=[DataRequired()])
-    examname = StringField("Exam Name", validators=[DataRequired()])
-    examinfo = TextAreaField("Exam Info", render_kw={"rows": 10}, validators=[DataRequired()])
-    location = StringField("Location", validators=[DataRequired()])
-    timestamp = DateTimeLocalField("Date", format="%Y-%m-%dT%H:%M", validators=[DataRequired()])
-    submit = SubmitField("Publish Exam Details")
-
-    def validate(self):
-        rv = FlaskForm.validate(self)
-        if not rv:
-            return False
-        mod = Module.query.filter_by(code=self.code.data, academic_year=self.academic_year.data, semester=self.semester.data).first()
-        if not mod:
-            self.code.errors.append("Module, Academic Year and/or semester does not exit!")
-        if len(self.errors) == 0:
-            return True
-        return False
-
-
-class ModuleExamUserCreateForm(FlaskForm):
-    code = StringField("Code", validators=[DataRequired()])
-    academic_year = StringField("Academic Year", render_kw={"placeholder": "eg. 2019/2020"}, validators=[DataRequired()])
-    semester = IntegerField("Semester", validators=[DataRequired()])
-    nusnetid = StringField("NUSNET ID", validators=[DataRequired()])
-    seatnum = IntegerField("Seat Number", validators=[DataRequired()])
-    submit = SubmitField("Enrol to Module")
-
-    def validate(self):
-        rv = FlaskForm.validate(self)
-        if not rv:
-            return False
-        mod = Module.query.filter_by(code=self.code.data, academic_year=self.academic_year.data, semester=self.semester.data).first()
-        if not mod:
-            self.code.errors.append("Module, Academic Year and/or semester does not exist!")
-        exam = Exam.query.filter_by(id=mod.id)
-        if not exam:
-            self.code.errors.append("Exam does not exist!")
-        if len(self.errors) == 0:
-            return True
-        return False
-
-
-class ModuleTaskCreateForm(FlaskForm):
-    code = StringField("Code", validators=[DataRequired()])
-    academic_year = StringField("Academic Year", render_kw={"placeholder": "eg. 2019/2020"}, validators=[DataRequired()])
-    semester = IntegerField("Semester", validators=[DataRequired()])
-    taskname = StringField("Task Name", validators=[DataRequired()])
-    taskinfo = TextAreaField("Task Info", render_kw={"rows": 10}, validators=[DataRequired()])
-    timestamp = DateTimeLocalField("Due Date", format="%Y-%m-%dT%H:%M", validators=[DataRequired()])
-    submit = SubmitField("Publish Task")
-
-    def validate(self):
-        rv = FlaskForm.validate(self)
-        if not rv:
-            return False
-        mod = Module.query.filter_by(code=self.code.data, academic_year=self.academic_year.data, semester=self.semester.data).first()
-        if not mod:
-            self.code.errors.append("Module, Academic Year and/or semester does not exit!")
-        if len(self.errors) == 0:
-            return True
-        return False
-
-
-class ModuleUserCreateForm(FlaskForm):
-    code = StringField("Code", validators=[DataRequired()])
-    academic_year = StringField("Academic Year", render_kw={"placeholder": "eg. 2019/2020"}, validators=[DataRequired()])
-    semester = IntegerField("Semester", validators=[DataRequired()])
-    nusnetid = StringField("NUSNET ID", validators=[DataRequired()])
-    submit = SubmitField("Enrol to Module")
-
-    def validate(self):
-        rv = FlaskForm.validate(self)
-        if not rv:
-            return False
-        usr = User.query.filter_by(nusnetid=self.nusnetid.data).first()
-        if not usr:
-            self.nusnetid.errors.append("NUSNET ID does not exit!")
-        mod = Module.query.filter_by(code=self.code.data, academic_year=self.academic_year.data, semester=self.semester.data).first()
-        if not mod:
-            self.code.errors.append("Module, Academic Year and/or semester does not exit!")
-        if usr and mod:
-            if Enrolled.query.filter_by(nusnetid=usr.nusnetid, module_id=mod.id).first():
-                self.code.errors.append("Student has already been enrolled to module!")
-        if len(self.errors) == 0:
-            return True
-        return False
-
-
-class UserCreateForm(FlaskForm):
-    name = StringField("Name", validators=[DataRequired()])
-    nusnetid = StringField("NUSNET ID", validators=[DataRequired()])
-    password = PasswordField("Password", validators=[DataRequired()])
-    password_confirm = PasswordField("Confirm Password", validators=[DataRequired(), EqualTo("password", message="Password must match.")])
+class RegisterUserForm(FlaskForm):
+    username = StringField("Username", validators=[DataRequired()])
     email = StringField("Email", validators=[DataRequired(), Email()])
-    submit = SubmitField("Register")
+    password = PasswordField("Password", validators=[DataRequired()])
+    verfiy_password = PasswordField("Verify Password", validators=[DataRequired(), EqualTo("password", message="Password must match.")])
+    create_profile = BooleanField("Create empty profile")
+    submit = SubmitField("Submit")
+
+    def validate_username(self, field):
+        if User.query.filter_by(username=field.data).first():
+            raise ValidationError("The username is currently being used!")
 
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first():
-            raise ValidationError("Your email has been registered already!")
+            raise ValidationError("The email is currently being used!")
 
-    def validate_nusnetid(self, field):
-        if User.query.filter_by(nusnetid=field.data).first():
-            raise ValidationError("Your nusnetid has been registered already!")
 
-class UHMSMessageCreateForm(FlaskForm):
+class CreateProfileForm(FlaskForm):
+    user_id = SelectField("User", coerce=int, validators=[InputRequired()])
+    nric = StringField("NRIC", validators=[DataRequired()])
+    first_name = StringField("First Name", validators=[DataRequired()])
+    last_name = StringField("Last Name", validators=[DataRequired()])
+    gender = StringField("Gender", validators=[DataRequired()])
+    birth_date = DateField("Birth Date", format="%Y-%m-%d")
+    marital_status = StringField("Marital Status", validators=[DataRequired()])
+    nationality = StringField("Nationality", validators=[DataRequired()])
+    mobile_number = IntegerField("Mobile Number", validators=[DataRequired()])
+    home_number = IntegerField("Home Number", validators=[DataRequired()])
+    home_address = TextAreaField("Home Address", validators=[DataRequired()])
+    emergency_contact_name = StringField("Emergency Contact Name", validators=[DataRequired()])
+    emergency_contact_number = IntegerField("Emergency Contact Number", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+    def validate_nric(self, field):
+        if UserProfile.query.filter_by(nric=field.data).first():
+            raise ValidationError("The NRIC is currently being used!")
+
+
+class CreateModuleForm(FlaskForm):
+    code = StringField("Code", validators=[DataRequired()])
+    name = StringField("Name", validators=[DataRequired()])
+    academic_year = IntegerField("Academic Year", validators=[DataRequired()])
+    semester = IntegerField("Semester", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
+class EnrollStudentForm(FlaskForm):
+    module_id = SelectField("Module", coerce=int, validators=[InputRequired()])
+    user_id = SelectField("User", coerce=int, validators=[InputRequired()])
+    submit = SubmitField("Submit")
+
+
+class PostAnnouncementForm(FlaskForm):
+    module_id = SelectField("Module", coerce=int, validators=[InputRequired()])
     title = StringField("Title", validators=[DataRequired()])
-    body = TextAreaField("Body", render_kw={"rows": 10}, validators=[DataRequired()])
-    submit = SubmitField("Publish Message")
+    body = TextAreaField("Body", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
+class PostTaskForm(FlaskForm):
+    module_id = SelectField("Module", coerce=int, validators=[InputRequired()])
+    start_timestamp = DateTimeLocalField("Start", format="%Y-%m-%dT%H:%M", validators=[DataRequired()])
+    end_timestamp = DateTimeLocalField("End", format="%Y-%m-%dT%H:%M", validators=[DataRequired()])
+    location = StringField("Location", validators=[DataRequired()])
+    title = StringField("Title", validators=[DataRequired()])
+    body = TextAreaField("Body", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
+class AssignTaskForm(FlaskForm):
+    task_id = SelectField("Task", coerce=int, validators=[InputRequired()])
+    user_id = SelectField("User", coerce=int, validators=[InputRequired()])
+    info = StringField("Specific User Info")
+    submit = SubmitField("Submit")
+
+
+class UploadFilesForm(FlaskForm):
+    module_id = SelectField("Module", coerce=int, validators=[InputRequired()])
+    category = SelectField("Category", choices=[("labs", "Labs"), ("lectures", "Lectures"), ("tutorials", "Tutorials"), ("misc", "Misc")], validators=[InputRequired()])
+    files = MultipleFileField('File(s) Upload')
+    submit = SubmitField("Submit")
+
+
+class TogglePluginForm(FlaskForm):
+    module_id = SelectField("Module", coerce=int, validators=[InputRequired()])
+    plugin_id = SelectField("Plugin", coerce=int, validators=[InputRequired()])
+    toggle = RadioField("Toggle", coerce=int, choices=[(1, "Enable"), (0, "Disable")])
+    submit = SubmitField("Submit")
+
+
+class CreateHostelForm(FlaskForm):
+    name = StringField("Name", validators=[DataRequired()])
+    type = StringField("Type", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
+class CreateRoomForm(FlaskForm):
+    hostel_id = SelectField("Hostel", coerce=int, validators=[InputRequired()])
+    block = StringField("Block", validators=[DataRequired()])
+    level = StringField("Level", validators=[DataRequired()])
+    room = StringField("Room", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
+class ManageApplicationForm(FlaskForm):
+    user_id = SelectField("User", coerce=int, validators=[InputRequired()])
+    hostel_room_id = SelectField("Room", coerce=int, validators=[InputRequired()])
+    submit = SubmitField("Submit")
+
+
+class BroadcastMessageForm(FlaskForm):
+    hostel_id = SelectField("Hostel", coerce=int, validators=[InputRequired()])
+    title = StringField("Title", validators=[DataRequired()])
+    body = TextAreaField("Body", validators=[DataRequired()])
+    submit = SubmitField("Submit")
