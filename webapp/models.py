@@ -136,6 +136,9 @@ class Module(db.Model):
         backref=db.backref("modules", lazy="dynamic"), lazy="dynamic"
     )
 
+    def check_exist(self, module):
+        return Module.query.filter_by(code=module.code, academic_year=module.academic_year, semester=module.semester).first()
+
     def __repr__(self):
         return f"<Module {self.code}>"
 
