@@ -5,7 +5,7 @@ from webapp.models import User
 
 
 class LoginForm(FlaskForm):
-    nusnetid = StringField("NUSNET ID", validators=[DataRequired()])
+    username = StringField("Username", validators=[DataRequired()])
     password = PasswordField("Password", validators=[DataRequired()])
     remember_me = BooleanField("Remember Me")
     submit = SubmitField("Log In")

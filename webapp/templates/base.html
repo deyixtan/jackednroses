@@ -9,12 +9,38 @@
         <div class="navbar-nav mr-auto">
             {{ render_nav_item("core.index", "Home") }}
             {% if current_user.is_authenticated %}
-            {{ render_nav_item("luminus.index", "LumiNUS") }}
+            <li class="nav-item dropdown">
+                {% if current_user.get_current_modules() %}
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Modules</a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    {% for module in current_user.get_current_modules() %}
+                    <a class="dropdown-item" href="{{ url_for('luminus.view_module', index=loop.index-1) }}">{{ module.get_formatted_name() }}</a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </li>
             {% endif %}
         </div>
         <div class="navbar-nav navbar-right">
             {% if current_user.is_authenticated %}
-            {{ render_nav_item("core.account", current_user.name) }}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {% if current_user.profile %}
+                    {{ current_user.profile.get_full_name() }}
+                    {% else %}
+                    {{ current_user.username }}
+                    {% endif %}
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    {% if current_user.profile %}
+                    <a class="dropdown-item" href="{{ url_for('edurec.index') }}">Profile</a>
+                    {% endif %}
+                    <a class="dropdown-item" href="{{ url_for('uhms.index') }}">Hostel</a>
+                    {% if current_user.is_admin %}
+                    <a class="dropdown-item" href="{{ url_for('admin.index') }}">Admin CP</a>
+                    {% endif %}
+                </div>
+            </li>
             {{ render_nav_item("users.logout", "Logout") }}
             {% endif %}
         </div>

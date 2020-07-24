@@ -1,21 +1,20 @@
 $(document).ready(function() {
-    $('#calendar').fullCalendar({
+    $("#calendar").fullCalendar({
         header: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'month,agendaWeek,agendaDay'
+            left: "prev,next today",
+            center: "title",
+            right: "month,agendaWeek,agendaDay"
         },
-        defaultDate: new Date().toISOString().substring(0, 10),
-        editable: true,
-        eventLimit: true, // allow "more" link when too many events
+        editable: false,
+        eventLimit: true,
         events: {
-            url: 'data',
+            url: "data",
             error: function() {
-                $('#script-warning').show();
+                $("#script-warning").show();
             }
         },
         loading: function(bool) {
-            $('#loading').toggle(bool);
+            $("#loading").toggle(bool);
         }
     });
 });

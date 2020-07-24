@@ -1,4 +1,3 @@
-# naming reference from https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
 from flask import render_template
 from webapp import db
 from webapp.errors import bp

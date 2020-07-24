@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Hostel{% endblock %}
+
+{% block app_content %}
+    <div class="row justify-content-md-center">
+        <!-- Hostel Messages -->
+        {% if current_room %}
+        <div class="col-md-2 border">
+            <br>
+            <h3>Hostel Messages</h3>
+            <div class="list-group w-100">
+                {% for message in messages %}
+                <!-- Hostel Message -->
+                <div class="list-group-item list-group-item-action flex-column align-items-start">
+                    <!-- Header -->
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ message.title }}</h5>
+                        <small class="text-muted">{{ moment(message.timestamp).fromNow() }}</small>
+                    </div>
+                    <!-- Body -->
+                    {% for line in message.body.splitlines() %}
+                    <p class="mb-1">{{ line }}</p>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        <!-- Hostel Information -->
+        <div class="col-md-5 border">
+            <br>
+            <h3>Hostel Information</h3>
+            <!-- Current Accommodation -->
+            <div class="card">
+                <h5 class="card-header text-center">Current Accommodation</h5>
+                <div class="card-body">
+                    {% if current_room %}
+                    <table class="table table-hover table-bordered">
+                        <tbody>
+                            <tr>
+                                <td class="text-right">Name</td>
+                                <td class="text-left">{{ current_room.hostel.name.upper() }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-right">Type</td>
+                                <td class="text-left">{{ current_room.hostel.type.upper() }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-right">Room Location</td>
+                                <td class="text-left">{{ current_room.get_formatted_location().upper() }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="card-body text-center">
+                        <a href="{{ url_for('uhms.apply') }}" class="btn btn-info align-items-start">Create Application</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <br>
+            <!-- Past Accommodations -->
+            <div class="card">
+                <h5 class="card-header text-center">Past Accommodations</h5>
+                <div class="card-body">
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Room Location</th>
+                                <th scope="col">Academic Year</th>
+                                <th scope="col">Semester</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for past_room in past_rooms %}
+                            <tr>
+                                <td class="text-center">{{ past_room[0].name.upper() }}</td>
+                                <td class="text-center">{{ past_room[0].type.upper() }}</td>
+                                <td class="text-center">{{ past_room[1].get_formatted_location().upper() }}</td>
+                                <td class="text-center">{{ past_room[2].academic_year }}</td>
+                                <td class="text-center">{{ past_room[2].semester }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <br>
+        </div>
+    </div>
+{% endblock %}

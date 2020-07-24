@@ -1,50 +1,16 @@
-import os
-from flask import render_template, url_for
+from flask import render_template
 from flask_login import current_user, login_required
-from wtforms import ValidationError
-from webapp import db
 from webapp.luminus import bp
-from webapp.models import Enrolled, Module, User
 
 
-@bp.route("/", defaults={"module_index": 0})
-@bp.route("/<int:module_index>")
+@bp.route("/", defaults={"index": 0})
+@bp.route("/<int:index>/")
 @login_required
-def index(module_index):
-    # Gets the NUSNET ID of the current user
-    user = User.query.filter_by(id=current_user.get_id()).first()
-    enrolled = Enrolled.query.filter_by(user=user).all()
-    module_list = []
-    # Check if user has enrolled modules
-    if enrolled:
-        for mod in enrolled:
-            module_list.append(Module.query.filter_by(id=mod.module_id).first())
+def view_module(index):
+    # get current viewed module
+    modules = current_user.get_current_modules()
+    module = modules[index]
+    # get module enabled plugins
+    plugins = module.plugins.all()
 
-        iframe = url_for('luminus.view_module', code=module_list[module_index].code)
-
-        return render_template("luminus/index.html", module_list=module_list, iframe=iframe)
-    else:
-        return render_template("luminus/index.html")
-
-
-@bp.route("/view_module/<code>/", defaults={"plugin_index": 0})
-@bp.route("/view_module/<code>/<int:plugin_index>")
-@login_required
-def view_module(code, plugin_index):
-    module = Module.query.filter_by(code=code).first_or_404()
-    basedir = os.path.abspath(os.path.dirname(__name__))
-    moduledir = os.path.join(basedir, "webapp", "luminus", "modules", module.code, module.academic_year.replace('/', ''), str(module.semester), "plugins")
-
-    # plugins
-    plugins = []
-    for root, dirs, files in os.walk(moduledir):
-        package_name = os.path.basename(root)
-        # print(f"I'm in {package_name}, files i have=<{files}>, dirs i have=<{dirs}>")
-        for file in files:
-            if file == "info.json":
-                import json
-                with open(os.path.join(moduledir, package_name, file)) as f:
-                    data = json.load(f)
-                    plugins.append(data)
-
-    return render_template("luminus/view_module.html", module=module, plugins=plugins, plugin_index=plugin_index)
+    return render_template("luminus/index.html", module=module, plugins=plugins)
