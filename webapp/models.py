@@ -1,3 +1,4 @@
+import jwt
 from datetime import datetime
 from sqlalchemy import and_, or_
 from flask import current_app
@@ -50,6 +51,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(128), index=True, unique=True)
     password_hash = db.Column(db.String(128))
+    telegram_id = db.Column(db.Integer)
     is_admin = db.Column(db.Boolean, default=False)
     profile = db.relationship("UserProfile", backref="user", uselist=False, lazy=True)
 
@@ -88,6 +90,9 @@ class User(db.Model, UserMixin):
             HostelRoomUserMap.academic_year != current_app.config["CURRENT_ACADEMIC_YEAR"],
             HostelRoomUserMap.semester != current_app.config["CURRENT_SEMESTER"]
         )).all()
+
+    def get_user_key(self):
+        return jwt.encode({"user_id": self.id}, current_app.config["SECRET_KEY"], algorithm="HS256").decode("utf-8")
 
 
 class UserProfile(db.Model):
@@ -251,6 +256,16 @@ class HostelRoom(db.Model):
             HostelRoomUserMap.academic_year == current_app.config["CURRENT_ACADEMIC_YEAR"],
             HostelRoomUserMap.semester == current_app.config["CURRENT_SEMESTER"]
         )).count() == 0
+
+    def get_current_user(self):
+        current_room = HostelRoomUserMap.query.filter(and_(
+            HostelRoomUserMap.hostel_room_id == self.id,
+            HostelRoomUserMap.academic_year == current_app.config["CURRENT_ACADEMIC_YEAR"],
+            HostelRoomUserMap.semester == current_app.config["CURRENT_SEMESTER"]
+        )).first()
+        if current_room.user_id:
+            return User.query.get(current_room.user_id)
+        return None
 
 
 class HostelApplication(db.Model):

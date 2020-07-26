@@ -3,7 +3,7 @@ import os
 from flask import flash, redirect, request, render_template, url_for
 from flask_login import login_required
 from werkzeug.utils import secure_filename
-from webapp import db
+from webapp import db, telegram
 from webapp.admin import bp
 from webapp.admin.forms import AssignTaskForm, CreateModuleForm, EnrollStudentForm, PostAnnouncementForm, PostTaskForm, TogglePluginForm, UploadFilesForm
 from webapp.models import Module, ModuleAnnouncement, ModuleTask, ModuleTaskUserMap, Plugin, User
@@ -23,7 +23,7 @@ def create_module():
         db.session.add(module)
         db.session.commit()
 
-        basedir = os.path.abspath(os.path.dirname(__name__))
+        basedir = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "..")
         module_files_path = os.path.join(basedir, "webapp", "luminus", "modules", str(module.id), "files")
         if not os.path.exists(module_files_path):
             os.makedirs(os.path.join(module_files_path, "labs"))
@@ -54,6 +54,9 @@ def enroll_student():
             return redirect(url_for("admin.enroll_student"))
         module.users.append(user)
         db.session.commit()
+
+        if user.telegram_id:
+            telegram.send_message(user.telegram_id, f"You've been enrolled into {module.get_full_formatted()}.")
         flash("Successfully enrolled student!", "success")
         return redirect(url_for("admin.enroll_student"))
     return render_template("admin/module/enroll_student.html", form=form)
@@ -71,6 +74,11 @@ def post_announcement():
         form.populate_obj(announcement)
         db.session.add(announcement)
         db.session.commit()
+
+        users = announcement.module.users
+        for user in users:
+            if user.telegram_id:
+                telegram.send_message(user.telegram_id, f"There is a new announcement made from {announcement.module.get_full_formatted()}.")
         flash("Successfully posted announcement!", "success")
         return redirect(url_for("admin.post_announcement"))
     return render_template("admin/module/post_announcement.html", form=form)
@@ -115,6 +123,10 @@ def assign_task():
         form.populate_obj(module_task_user)
         db.session.add(module_task_user)
         db.session.commit()
+
+        if user.telegram_id:
+            telegram.send_message(user.telegram_id, f"New task assigned to you from {task.module.get_full_formatted()}.")
+        flash("Successfully posted task!", "success")
         flash("Successfully assigned task!", "success")
         return redirect(url_for("admin.assign_task"))
     return render_template("admin/module/assign_task.html", form=form)
@@ -128,12 +140,18 @@ def upload_files():
     modules = [(module.id, module.get_full_formatted()) for module in modules]
     form.module_id.choices = modules
     if form.validate_on_submit():
-        basedir = os.path.abspath(os.path.dirname(__name__))
+        basedir = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "..")
         module_files_path = os.path.join(basedir, "webapp", "luminus", "modules", str(form.module_id.data), "files")
         files = request.files.getlist(form.files.name)
         if files:
             for file in files:
                 file.save(os.path.join(module_files_path, form.category.data, secure_filename(file.filename)))
+
+        module = Module.query.get(form.module_id.data)
+        users = module.users
+        for user in users:
+            if user.telegram_id:
+                telegram.send_message(user.telegram_id, f"New file update from {module.get_full_formatted()}.")
         flash("Successfully uploaded file(s)", "success")
         return redirect(url_for("admin.upload_files"))
     return render_template("admin/module/upload_files.html", form=form)

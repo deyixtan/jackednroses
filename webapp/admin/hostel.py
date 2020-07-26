@@ -1,6 +1,6 @@
 from flask import current_app, flash, redirect, request, render_template, url_for
 from flask_login import login_required
-from webapp import db
+from webapp import db, telegram
 from webapp.admin import bp
 from webapp.admin.forms import BroadcastMessageForm, CreateHostelForm, CreateRoomForm, ManageApplicationForm
 from webapp.models import Hostel, HostelApplication, HostelMessage, HostelRoom, HostelRoomUserMap, User
@@ -73,6 +73,10 @@ def manage_application():
         rent = HostelRoomUserMap(hostel_room_id=form.hostel_room_id.data, academic_year=current_app.config["CURRENT_ACADEMIC_YEAR"], semester=current_app.config["CURRENT_SEMESTER"], user_id=form.user_id.data)
         db.session.add(rent)
         db.session.commit()
+
+        user = User.query.get(form.user_id.data)
+        if user.telegram_id:
+            telegram.send_message(user.telegram_id, "Your hostel application has been approved.")
         flash("Successfully processed application!", "success")
         return redirect(url_for("admin.manage_application"))
     return render_template("admin/hostel/manage_application.html", form=form)
@@ -90,6 +94,13 @@ def broadcast_message():
         form.populate_obj(message)
         db.session.add(message)
         db.session.commit()
+
+        hostel = Hostel.query.get(form.hostel_id.data)
+        rooms = hostel.rooms
+        for room in rooms:
+            user = room.get_current_user()
+            if user.telegram_id:
+                telegram.send_message(user.telegram_id, f"There is a new message posted from {message.hostel.name}")
         flash("Successfully broadcasted message!", "success")
         return redirect(url_for("admin.broadcast_message"))
     return render_template("admin/hostel/broadcast_message.html", form=form)

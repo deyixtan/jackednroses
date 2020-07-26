@@ -5,6 +5,7 @@ from flask_migrate import Migrate
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 from config import Config
+from webapp.telegram_bot import Telegram
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -12,6 +13,7 @@ login_manager = LoginManager()
 login_manager.login_view = "users.login"
 bootstrap = Bootstrap()
 moment = Moment()
+telegram = Telegram()
 
 
 def create_app(config_class=Config):
@@ -25,6 +27,7 @@ def create_app(config_class=Config):
     login_manager.init_app(app)
     bootstrap.init_app(app)
     moment.init_app(app)
+    telegram.init_app(app)
 
     # blueprint registrations
     from webapp.admin import bp as admin_bp
@@ -44,6 +47,9 @@ def create_app(config_class=Config):
 
     from webapp.luminus import bp as luminus_bp
     app.register_blueprint(luminus_bp, url_prefix="/luminus")
+    
+    from webapp.telegram import bp as telegram_bp
+    app.register_blueprint(telegram_bp, url_prefix="/telegram")
 
     from webapp.uhms import bp as uhms_bp
     app.register_blueprint(uhms_bp, url_prefix="/uhms")
