@@ -121,3 +121,8 @@ class BroadcastMessageForm(FlaskForm):
     title = StringField("Title", validators=[DataRequired()])
     body = TextAreaField("Body", validators=[DataRequired()])
     submit = SubmitField("Submit")
+
+
+class TelegramBotForm(FlaskForm):
+    toggle = RadioField("Toggle", coerce=int, choices=[(1, "Enable"), (0, "Disable")])
+    submit = SubmitField("Submit")

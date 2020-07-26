@@ -27,8 +27,8 @@
                 </div>
             </div>
             <br>
-             <!-- Module Related -->
-             <div class="card">
+            <!-- Module Related -->
+            <div class="card">
                 <h5 class="card-header text-center">Module Related</h5>
                 <div class="card-body">
                     <table class="table table-hover table-bordered">
@@ -80,8 +80,8 @@
                 </div>
             </div>
             <br>
-             <!-- Hostel Related -->
-             <div class="card">
+            <!-- Hostel Related -->
+            <div class="card">
                 <h5 class="card-header text-center">Hostel Related</h5>
                 <div class="card-body">
                     <table class="table table-hover table-bordered">
@@ -110,6 +110,23 @@
                                     <a href="{{ url_for('admin.index', page='broadcast_message') }}" class="btn btn-info align-items-start">Proceed</a>
                                 </td>
                             </tr>                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <br>
+            <!-- Telegram Related -->
+            <div class="card">
+                <h5 class="card-header text-center">Telegram Related</h5>
+                <div class="card-body">
+                    <table class="table table-hover table-bordered">
+                        <tbody>
+                            <tr>
+                                <td class="text-right">Telegram Webhook</td>
+                                <td class="text-left">
+                                    <a href="{{ url_for('admin.index', page='toggle_telegram') }}" class="btn btn-info align-items-start">Proceed</a>
+                                </td>
+                            </tr>                     
                         </tbody>
                     </table>
                 </div>
