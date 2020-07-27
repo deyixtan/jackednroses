@@ -263,8 +263,9 @@ class HostelRoom(db.Model):
             HostelRoomUserMap.academic_year == current_app.config["CURRENT_ACADEMIC_YEAR"],
             HostelRoomUserMap.semester == current_app.config["CURRENT_SEMESTER"]
         )).first()
-        if current_room.user_id:
-            return User.query.get(current_room.user_id)
+        if current_room:
+            if current_room.user_id:
+                return User.query.get(current_room.user_id)
         return None
 
 

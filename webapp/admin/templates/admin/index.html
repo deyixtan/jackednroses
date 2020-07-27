@@ -11,15 +11,17 @@
                     <table class="table table-hover table-bordered">
                         <tbody>
                             <tr>
-                                <td class="text-right">Register User</td>
+                                <td class="text-right">User</td>
                                 <td class="text-left">
-                                    <a href="{{ url_for('admin.index', page='register_user') }}" class="btn btn-info align-items-start">Proceed</a>
+                                    <a href="{{ url_for('admin.index', page='register_user') }}" class="btn btn-success align-items-start">Create</a>
+                                    <a href="{{ url_for('admin.index', page='unregister_user') }}" class="btn btn-danger align-items-start">Delete</a>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="text-right">Create Profile</td>
+                                <td class="text-right">User Profile</td>
                                 <td class="text-left">
-                                    <a href="{{ url_for('admin.index', page='create_profile') }}" class="btn btn-info align-items-start">Proceed</a>
+                                    <a href="{{ url_for('admin.index', page='create_profile') }}" class="btn btn-success align-items-start">Create</a>
+                                    <a href="{{ url_for('admin.index', page='delete_profile') }}" class="btn btn-danger align-items-start">Delete</a>
                                 </td>
                             </tr>
                         </tbody>
@@ -34,33 +36,38 @@
                     <table class="table table-hover table-bordered">
                         <tbody>
                             <tr>
-                                <td class="text-right">Create Module</td>
+                                <td class="text-right">Module</td>
                                 <td class="text-left">
-                                    <a href="{{ url_for('admin.index', page='create_module') }}" class="btn btn-info align-items-start">Proceed</a>
+                                    <a href="{{ url_for('admin.index', page='create_module') }}" class="btn btn-success align-items-start">Create</a>
+                                    <a href="{{ url_for('admin.index', page='delete_module') }}" class="btn btn-danger align-items-start">Delete</a>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="text-right">Enroll Student</td>
+                                <td class="text-right">Student Enrolment</td>
                                 <td class="text-left">
-                                    <a href="{{ url_for('admin.index', page='enroll_student') }}" class="btn btn-info align-items-start">Proceed</a>
+                                    <a href="{{ url_for('admin.index', page='enroll_student') }}" class="btn btn-success align-items-start">Create</a>
+                                    <a href="{{ url_for('admin.index', page='unenroll_student') }}" class="btn btn-danger align-items-start">Delete</a>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="text-right">Post Announcement</td>
+                                <td class="text-right">Module Announcement</td>
                                 <td class="text-left">
-                                    <a href="{{ url_for('admin.index', page='post_announcement') }}" class="btn btn-info align-items-start">Proceed</a>
+                                    <a href="{{ url_for('admin.index', page='post_announcement') }}" class="btn btn-success align-items-start">Create</a>
+                                    <a href="{{ url_for('admin.index', page='delete_announcement') }}" class="btn btn-danger align-items-start">Delete</a>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="text-right">Post Task</td>
+                                <td class="text-right">Module Task</td>
                                 <td class="text-left">
-                                    <a href="{{ url_for('admin.index', page='post_task') }}" class="btn btn-info align-items-start">Proceed</a>
+                                    <a href="{{ url_for('admin.index', page='post_task') }}" class="btn btn-success align-items-start">Create</a>
+                                    <a href="{{ url_for('admin.index', page='delete_task') }}" class="btn btn-danger align-items-start">Delete</a>                                    
                                 </td>
                             </tr>
                             <tr>
-                                <td class="text-right">Assign Task</td>
+                                <td class="text-right">Task Assignment</td>
                                 <td class="text-left">
-                                    <a href="{{ url_for('admin.index', page='assign_task') }}" class="btn btn-info align-items-start">Proceed</a>
+                                    <a href="{{ url_for('admin.index', page='assign_task') }}" class="btn btn-success align-items-start">Create</a>
+                                    <a href="{{ url_for('admin.index', page='unassign_task') }}" class="btn btn-danger align-items-start">Delete</a>
                                 </td>
                             </tr>
                             <tr>
@@ -87,15 +94,17 @@
                     <table class="table table-hover table-bordered">
                         <tbody>
                             <tr>
-                                <td class="text-right">Create Hostel</td>
+                                <td class="text-right">Hostel</td>
                                 <td class="text-left">
-                                    <a href="{{ url_for('admin.index', page='create_hostel') }}" class="btn btn-info align-items-start">Proceed</a>
+                                    <a href="{{ url_for('admin.index', page='create_hostel') }}" class="btn btn-success align-items-start">Create</a>
+                                    <a href="{{ url_for('admin.index', page='delete_hostel') }}" class="btn btn-danger align-items-start">Delete</a>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="text-right">Create Room</td>
+                                <td class="text-right">Hostel Room</td>
                                 <td class="text-left">
-                                    <a href="{{ url_for('admin.index', page='create_room') }}" class="btn btn-info align-items-start">Proceed</a>
+                                    <a href="{{ url_for('admin.index', page='create_room') }}" class="btn btn-success align-items-start">Create</a>
+                                    <a href="{{ url_for('admin.index', page='delete_room') }}" class="btn btn-danger align-items-start">Delete</a>
                                 </td>
                             </tr>
                             <tr>
@@ -105,9 +114,10 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td class="text-right">Broadcast Message</td>
+                                <td class="text-right">Hostel Message</td>
                                 <td class="text-left">
-                                    <a href="{{ url_for('admin.index', page='broadcast_message') }}" class="btn btn-info align-items-start">Proceed</a>
+                                    <a href="{{ url_for('admin.index', page='broadcast_message') }}" class="btn btn-success align-items-start">Create</a>
+                                    <a href="{{ url_for('admin.index', page='delete_broadcast_message') }}" class="btn btn-danger align-items-start">Delete</a>
                                 </td>
                             </tr>                            
                         </tbody>

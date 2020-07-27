@@ -23,6 +23,11 @@ class RegisterUserForm(FlaskForm):
             raise ValidationError("The email is currently being used!")
 
 
+class UnregisterUserForm(FlaskForm):
+    user_id = SelectField("User", coerce=int, validators=[InputRequired()])
+    submit = SubmitField("Submit")
+
+
 class CreateProfileForm(FlaskForm):
     user_id = SelectField("User", coerce=int, validators=[InputRequired()])
     nric = StringField("NRIC", validators=[DataRequired()])
@@ -44,11 +49,21 @@ class CreateProfileForm(FlaskForm):
             raise ValidationError("The NRIC is currently being used!")
 
 
+class DeleteProfileForm(FlaskForm):
+    profile_id = SelectField("User Profile", coerce=int, validators=[InputRequired()])
+    submit = SubmitField("Submit")
+
+
 class CreateModuleForm(FlaskForm):
     code = StringField("Code", validators=[DataRequired()])
     name = StringField("Name", validators=[DataRequired()])
     academic_year = IntegerField("Academic Year", validators=[DataRequired()])
     semester = IntegerField("Semester", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
+class DeleteModuleForm(FlaskForm):
+    module_id = SelectField("Module", coerce=int, validators=[InputRequired()])
     submit = SubmitField("Submit")
 
 
@@ -58,10 +73,21 @@ class EnrollStudentForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
+class UnenrollStudentForm(FlaskForm):
+    module_id = SelectField("Module", coerce=int, validators=[InputRequired()])
+    user_id = SelectField("User", coerce=int, validators=[InputRequired()])
+    submit = SubmitField("Submit")
+
+
 class PostAnnouncementForm(FlaskForm):
     module_id = SelectField("Module", coerce=int, validators=[InputRequired()])
     title = StringField("Title", validators=[DataRequired()])
     body = TextAreaField("Body", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
+class DeleteAnnouncementForm(FlaskForm):
+    announcement_id = SelectField("Announcement", coerce=int, validators=[InputRequired()])
     submit = SubmitField("Submit")
 
 
@@ -75,10 +101,21 @@ class PostTaskForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
+class DeleteTaskForm(FlaskForm):
+    task_id = SelectField("Task", coerce=int, validators=[InputRequired()])
+    submit = SubmitField("Submit")
+
+
 class AssignTaskForm(FlaskForm):
     task_id = SelectField("Task", coerce=int, validators=[InputRequired()])
     user_id = SelectField("User", coerce=int, validators=[InputRequired()])
     info = StringField("Specific User Info")
+    submit = SubmitField("Submit")
+
+
+class UnassignTaskForm(FlaskForm):
+    task_id = SelectField("Task", coerce=int, validators=[InputRequired()])
+    user_id = SelectField("User", coerce=int, validators=[InputRequired()])
     submit = SubmitField("Submit")
 
 
@@ -102,11 +139,21 @@ class CreateHostelForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
+class DeleteHostelForm(FlaskForm):
+    hostel_id = SelectField("Hostel", coerce=int, validators=[InputRequired()])
+    submit = SubmitField("Submit")
+
+
 class CreateRoomForm(FlaskForm):
     hostel_id = SelectField("Hostel", coerce=int, validators=[InputRequired()])
     block = StringField("Block", validators=[DataRequired()])
     level = StringField("Level", validators=[DataRequired()])
     room = StringField("Room", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
+class DeleteRoomForm(FlaskForm):
+    room_id = SelectField("Room", coerce=int, validators=[InputRequired()])
     submit = SubmitField("Submit")
 
 
@@ -120,6 +167,11 @@ class BroadcastMessageForm(FlaskForm):
     hostel_id = SelectField("Hostel", coerce=int, validators=[InputRequired()])
     title = StringField("Title", validators=[DataRequired()])
     body = TextAreaField("Body", validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
+class DeleteBroadcastMessageForm(FlaskForm):
+    message_id = SelectField("Message", coerce=int, validators=[InputRequired()])
     submit = SubmitField("Submit")
 
 

@@ -2,7 +2,7 @@ from flask import current_app, flash, redirect, request, render_template, url_fo
 from flask_login import login_required
 from webapp import db, telegram
 from webapp.admin import bp
-from webapp.admin.forms import BroadcastMessageForm, CreateHostelForm, CreateRoomForm, ManageApplicationForm
+from webapp.admin.forms import BroadcastMessageForm, CreateHostelForm, CreateRoomForm, DeleteBroadcastMessageForm, DeleteHostelForm, DeleteRoomForm, ManageApplicationForm
 from webapp.models import Hostel, HostelApplication, HostelMessage, HostelRoom, HostelRoomUserMap, User
 
 
@@ -24,6 +24,28 @@ def create_hostel():
     return render_template("admin/hostel/create_hostel.html", form=form)
 
 
+@bp.route("/hostel/delete_hostel", methods=["GET", "POST"])
+@login_required
+def delete_hostel():
+    form = DeleteHostelForm()
+    hostels = Hostel.query.all()
+    hostels = [(hostel.id, hostel.name) for hostel in hostels]
+    form.hostel_id.choices = hostels
+    if form.validate_on_submit():
+        # delete application
+        HostelApplication.query.filter_by(hostel_id=form.hostel_id.data).delete()
+        # delete messages
+        HostelMessage.query.filter_by(hostel_id=form.hostel_id.data).delete()       
+        # delete rooms
+        HostelRoom.query.filter_by(hostel_id=form.hostel_id.data).delete() 
+        # hostel
+        Hostel.query.filter_by(id=form.hostel_id.data).delete()
+        db.session.commit()
+        flash("Successfully deleted hostel!", "success")
+        return redirect(url_for("admin.delete_hostel"))
+    return render_template("admin/hostel/delete_hostel.html", form=form)
+
+
 @bp.route("/hostel/create_room", methods=["GET", "POST"])
 @login_required
 def create_room():
@@ -43,6 +65,21 @@ def create_room():
         flash("Successfully created hostel room!", "success")
         return redirect(url_for("admin.create_room"))
     return render_template("admin/hostel/create_room.html", form=form)
+
+
+@bp.route("/hostel/delete_room", methods=["GET", "POST"])
+@login_required
+def delete_room():
+    form = DeleteRoomForm()
+    rooms = HostelRoom.query.all()
+    rooms = [(room.id, f"{room.hostel.name} Room {room.get_formatted_location()}") for room in rooms]
+    form.room_id.choices = rooms
+    if form.validate_on_submit():
+        HostelRoom.query.get(form.room_id.data).delete()
+        db.session.commit()
+        flash("Successfully deleted hostel room!", "success")
+        return redirect(url_for("admin.delete_room"))
+    return render_template("admin/hostel/delete_room.html", form=form)
 
 
 @bp.route("/hostel/manage_application", methods=["GET", "POST"])
@@ -99,8 +136,25 @@ def broadcast_message():
         rooms = hostel.rooms
         for room in rooms:
             user = room.get_current_user()
-            if user.telegram_id:
-                telegram.send_message(user.telegram_id, f"There is a new message posted from {message.hostel.name}")
+            if user:
+                if user.telegram_id:
+                    telegram.send_message(user.telegram_id, f"There is a new message posted from {message.hostel.name}")
         flash("Successfully broadcasted message!", "success")
         return redirect(url_for("admin.broadcast_message"))
     return render_template("admin/hostel/broadcast_message.html", form=form)
+
+
+@bp.route("/hostel/delete_broadcast_message", methods=["GET", "POST"])
+@login_required
+def delete_broadcast_message():
+    form = DeleteBroadcastMessageForm()
+    messages = HostelMessage.query.all()
+    messages = [(message.id, f"[{message.hostel.name}] {message.title}") for message in messages]
+    form.message_id.choices = messages
+    if form.validate_on_submit():
+        HostelMessage.query.get(form.message_id.data).delete()
+        db.session.commit()
+
+        flash("Successfully deleted broadcasted message!", "success")
+        return redirect(url_for("admin.delete_broadcast_message"))
+    return render_template("admin/hostel/delete_broadcast_message.html", form=form)

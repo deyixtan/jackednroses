@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% from "bootstrap/form.html" import render_form %}
+
+{% block navbar %}{% endblock %}
+
+{% block app_content %}
+    <div class="row">
+        <div class="container">
+            <h1>Delete Task</h1>
+            {{ render_form(form) }}
+        </div>
+    </div>
+{% endblock %}
