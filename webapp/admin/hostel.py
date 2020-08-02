@@ -48,7 +48,7 @@ def delete_hostel():
             db.session.delete(room)
         # HostelRoom.query.filter_by(hostel_id=form.hostel_id.data).delete()
         # hostel
-        hostel = Hostel.query.filter_by(id=form.hostel_id.data).first()
+        hostel = Hostel.query.get(form.hostel_id.data)
         if hostel:
             db.session.delete(hostel)
         # Hostel.query.filter_by(id=form.hostel_id.data).delete()
