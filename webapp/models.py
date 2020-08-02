@@ -41,7 +41,7 @@ class HostelRoomUserMap(db.Model):
     semester = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     user = db.relationship("User", backref="hostel_room_user")
-    hostel_room = db.relationship("HostelRoom", backref="hostel_room_user")
+    hostel_room = db.relationship("HostelRoom", backref=db.backref("hostel_room_user", cascade="save-update, merge, delete, delete-orphan"))
 
 
 # Object Tables

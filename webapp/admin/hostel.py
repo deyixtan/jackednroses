@@ -33,13 +33,25 @@ def delete_hostel():
     form.hostel_id.choices = hostels
     if form.validate_on_submit():
         # delete application
-        HostelApplication.query.filter_by(hostel_id=form.hostel_id.data).delete()
+        application = HostelApplication.query.filter_by(hostel_id=form.hostel_id.data).first()
+        if application:
+            db.session.delete(application)
+        # HostelApplication.query.filter_by(hostel_id=form.hostel_id.data).delete()
         # delete messages
-        HostelMessage.query.filter_by(hostel_id=form.hostel_id.data).delete()       
+        message = HostelMessage.query.filter_by(hostel_id=form.hostel_id.data).first()
+        if message:
+            db.session.delete(message)
+        # HostelMessage.query.filter_by(hostel_id=form.hostel_id.data).delete()
         # delete rooms
-        HostelRoom.query.filter_by(hostel_id=form.hostel_id.data).delete() 
+        room = HostelRoom.query.filter_by(hostel_id=form.hostel_id.data).first()
+        if room:
+            db.session.delete(room)
+        # HostelRoom.query.filter_by(hostel_id=form.hostel_id.data).delete()
         # hostel
-        Hostel.query.filter_by(id=form.hostel_id.data).delete()
+        hostel = Hostel.query.filter_by(id=form.hostel_id.data).first()
+        if hostel:
+            db.session.delete(hostel)
+        # Hostel.query.filter_by(id=form.hostel_id.data).delete()
         db.session.commit()
         flash("Successfully deleted hostel!", "success")
         return redirect(url_for("admin.delete_hostel"))
@@ -75,7 +87,10 @@ def delete_room():
     rooms = [(room.id, f"{room.hostel.name} Room {room.get_formatted_location()}") for room in rooms]
     form.room_id.choices = rooms
     if form.validate_on_submit():
-        HostelRoom.query.get(form.room_id.data).delete()
+        room = HostelRoom.query.get(form.room_id.data)
+        if room:
+            db.session.delete(room)
+        # HostelRoom.query.get(form.room_id.data).delete()
         db.session.commit()
         flash("Successfully deleted hostel room!", "success")
         return redirect(url_for("admin.delete_room"))
@@ -106,7 +121,8 @@ def manage_application():
     form.hostel_room_id.choices = hostel_room_ids
     if form.validate_on_submit():
         application = HostelApplication.query.filter_by(user_id=form.user_id.data, hostel_id=HostelRoom.query.get(form.hostel_room_id.data).hostel.id).first()
-        db.session.delete(application)
+        if application:
+            db.session.delete(application)
         rent = HostelRoomUserMap(hostel_room_id=form.hostel_room_id.data, academic_year=current_app.config["CURRENT_ACADEMIC_YEAR"], semester=current_app.config["CURRENT_SEMESTER"], user_id=form.user_id.data)
         db.session.add(rent)
         db.session.commit()
@@ -152,7 +168,10 @@ def delete_broadcast_message():
     messages = [(message.id, f"[{message.hostel.name}] {message.title}") for message in messages]
     form.message_id.choices = messages
     if form.validate_on_submit():
-        HostelMessage.query.get(form.message_id.data).delete()
+        message = HostelMessage.query.get(form.message_id.data)
+        if message:
+            db.session.delete(message)
+        # HostelMessage.query.get(form.message_id.data).delete()
         db.session.commit()
 
         flash("Successfully deleted broadcasted message!", "success")
