@@ -265,9 +265,11 @@ def toggle_plugin():
         module = Module.query.get(form.module_id.data)
         plugin = Plugin.query.get(form.plugin_id.data)
         if form.toggle.data:
-            module.plugins.append(plugin)
+            if plugin not in module.plugins:
+                module.plugins.append(plugin)
         else:
-            module.plugins.remove(plugin)
+            if plugin in module.plugins:
+                module.plugins.remove(plugin)
         db.session.commit()
         flash("Successfully toggled plugin!", "success")
         return redirect(url_for("admin.toggle_plugin"))
