@@ -17,10 +17,9 @@ def update():
     form = EditProfileForm()
     if form.validate_on_submit():
         # update existing profile details with form changes
-        print(current_user.profile.nationality, form.nationality.data.lower())
-        current_user.profile.nationality = form.nationality.data.lower()
+        current_user.profile.nationality = form.nationality.data
         current_user.profile.nric = form.nric.data
-        current_user.profile.marital_status = form.marital_status.data.lower()
+        current_user.profile.marital_status = form.marital_status.data
         current_user.profile.mobile_number = form.mobile_number.data
         current_user.profile.home_number = form.home_number.data
         current_user.profile.home_address = form.home_address.data
@@ -30,9 +29,9 @@ def update():
         flash("Successfully updated user profile.", "success")
         return(redirect(url_for("edurec.index")))
     # prepopulate form with user existing profile details
-    form.nationality.data = current_user.profile.nationality.capitalize()
+    form.nationality.data = current_user.profile.nationality
     form.nric.data = current_user.profile.nric
-    form.marital_status.data = current_user.profile.marital_status.capitalize()
+    form.marital_status.data = current_user.profile.marital_status
     form.mobile_number.data = current_user.profile.mobile_number
     form.home_number.data = current_user.profile.home_number
     form.home_address.data = current_user.profile.home_address
